@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JHUNAY RESTO BAR | Menú Digital</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter & Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        grillDark: '#0f0f11',
+                        grillCard: '#18181b',
+                        grillBorder: '#27272a',
+                        grillRed: '#ef4444',
+                        grillRedHover: '#dc2626',
+                        grillGold: '#f59e0b',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Outfit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar and aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f0f11;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3f3f46;
+        }
+        .hero-bg {
+            background: linear-gradient(rgba(15, 15, 17, 0.7), rgba(15, 15, 17, 0.95)), url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=1200') center/cover no-repeat;
+        }
+    </style>
+</head>
+<body class="bg-grillDark text-gray-100 font-sans antialiased selection:bg-grillRed selection:text-white pb-24">
+
+    <!-- Navigation / Header -->
+    <header class="sticky top-0 z-50 bg-grillDark/95 backdrop-blur-md border-b border-grillBorder">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-grillRed to-grillGold flex items-center justify-center shadow-lg shadow-grillRed/30">
+                    <i class="fa-solid fa-fire text-white text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-heading font-extrabold text-xl sm:text-2xl tracking-wider text-white">JHUNAY</h1>
+                    <p class="text-xs text-grillGold tracking-widest font-semibold uppercase">Resto Bar & Grill</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <a href="tel:0963969957" class="hidden sm:flex items-center space-x-2 bg-grillCard hover:bg-grillBorder text-gray-200 px-4 py-2 rounded-full border border-grillBorder transition-all text-sm font-medium">
+                    <i class="fa-solid fa-phone text-grillGold"></i>
+                    <span>096 396 9957</span>
+                </a>
+                <button onclick="toggleCartModal()" class="relative bg-grillRed hover:bg-grillRedHover text-white p-3 rounded-full shadow-lg transition-all flex items-center justify-center w-11 h-11">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span id="cart-badge" class="absolute -top-1 -right-1 bg-grillGold text-grillDark font-bold text-xs w-5 h-5 rounded-full flex items-center justify-center shadow-md hidden">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-bg py-16 sm:py-24 px-4 text-center relative border-b border-grillBorder">
+        <div class="max-w-4xl mx-auto space-y-4">
+            <span class="inline-block bg-grillRed/20 text-grillRed border border-grillRed/30 text-xs sm:text-sm font-bold px-4 py-1.5 rounded-full uppercase tracking-widest">
+                Fast Food & Grill Since 1992
+            </span>
+            <h2 class="font-heading text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight">
+                Buen Sabor, en Cada Momento
+            </h2>
+            <p class="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">
+                Disfruta de las mejores parrilladas al carbón, cortes finos, hamburguesas artesanales y picaditas exclusivas de la casa.
+            </p>
+            <div class="pt-4 flex flex-wrap justify-center gap-3">
+                <a href="#menu-categories" class="bg-grillRed hover:bg-grillRedHover text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-grillRed/30 transition-all">
+                    Ver Menú Completo
+                </a>
+                <a href="https://wa.me/593963969957?text=Hola,%20deseo%20hacer%20un%20pedido%20desde%20el%20men%C3%BA%20digital." target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-emerald-600/30 transition-all flex items-center space-x-2">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                    <span>Pedir por WhatsApp</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Category Filter Bar -->
+    <nav id="menu-categories" class="sticky top-20 z-40 bg-grillDark/95 backdrop-blur-md border-b border-grillBorder py-3 px-4 overflow-x-auto shadow-md">
+        <div class="max-w-7xl mx-auto flex space-x-2 sm:space-x-3 min-w-max justify-start sm:justify-center">
+            <button onclick="filterCategory('all')" class="cat-btn active-cat px-4 py-2 rounded-xl text-sm font-bold bg-grillRed text-white transition-all shadow-md">
+                <i class="fa-solid fa-utensils mr-2"></i>Todo
+            </button>
+            <button onclick="filterCategory('parrilladas')" class="cat-btn px-4 py-2 rounded-xl text-sm font-semibold bg-grillCard text-gray-300 hover:bg-grillBorder transition-all border border-grillBorder">
+                <i class="fa-solid fa-fire-flame-curved mr-2 text-grillRed"></i>Parrilladas & Cortes
+            </button>
+            <button onclick="filterCategory('hamburguesas')" class="cat-btn px-4 py-2 rounded-xl text-sm font-semibold bg-grillCard text-gray-300 hover:bg-grillBorder transition-all border border-grillBorder">
+                <i class="fa-solid fa-burger mr-2 text-grillGold"></i>Hamburguesas
+            </button>
+            <button onclick="filterCategory('alitas')" class="cat-btn px-4 py-2 rounded-xl text-sm font-semibold bg-grillCard text-gray-300 hover:bg-grillBorder transition-all border border-grillBorder">
+                <i class="fa-solid fa-drumstick-bite mr-2 text-orange-500"></i>Alitas
+            </button>
+            <button onclick="filterCategory('picaditas')" class="cat-btn px-4 py-2 rounded-xl text-sm font-semibold bg-grillCard text-gray-300 hover:bg-grillBorder transition-all border border-grillBorder">
+                <i class="fa-solid fa-plate-wheat mr-2 text-yellow-600"></i>Picaditas
+            </button>
+            <button onclick="filterCategory('combos')" class="cat-btn px-4 py-2 rounded-xl text-sm font-semibold bg-grillCard text-gray-300 hover:bg-grillBorder transition-all border border-grillBorder">
+                <i class="fa-solid fa-percent mr-2 text-emerald-500"></i>Combos
+            </button>
+            <button onclick="filterCategory('cocteles')" class="cat-btn px-4 py-2 rounded-xl text-sm font-semibold bg-grillCard text-gray-300 hover:bg-grillBorder transition-all border border-grillBorder">
+                <i class="fa-solid fa-wine-glass mr-2 text-purple-400"></i>Cocteles & Bar
+            </button>
+            <button onclick="filterCategory('bebidas')" class="cat-btn px-4 py-2 rounded-xl text-sm font-semibold bg-grillCard text-gray-300 hover:bg-grillBorder transition-all border border-grillBorder">
+                <i class="fa-solid fa-cup-togo mr-2 text-blue-400"></i>Bebidas & Jugos
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Menu Sections -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+
+        <!-- PARRILLADAS & CORTES -->
+        <section id="section-parrilladas" class="menu-section space-y-6">
+            <div class="border-l-4 border-grillRed pl-4">
+                <h2 class="font-heading text-2xl sm:text-3xl font-extrabold text-white">Parrilladas & Cortes Especiales</h2>
+                <p class="text-gray-400 text-sm sm:text-base">Todas nuestras parrilladas y cortes incluyen papas fritas o criollas, arroz moro y ensalada fresca.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="grid-parrilladas">
+                <!-- Item 1 -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-grillRed/50 transition-all group">
+                    <div class="relative h-48 overflow-hidden bg-gray-800">
+                        <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=600" alt="Parrillada Personal Jhunay" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/18181b/f59e0b?text=Parrillada'">
+                        <div class="absolute top-3 right-3 bg-grillDark/80 backdrop-blur-md px-3 py-1 rounded-full text-grillGold font-bold text-sm border border-grillBorder">$8.99</div>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-heading text-lg font-bold text-white">Parrillada Personal Jhunay</h3>
+                            <p class="text-gray-400 text-sm mt-1">Medio filete de pollo, chuleta, lomo, 2 chorizos, 4 camarones al grill, papas crocantes, arroz moro y ensalada.</p>
+                        </div>
+                        <button onclick="addToCart('Parrillada Personal Jhunay', 8.99, 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=600')" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus"></i><span>Agregar al Pedido</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-grillRed/50 transition-all group">
+                    <div class="relative h-48 overflow-hidden bg-gray-800">
+                        <img src="https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&q=80&w=600" alt="Parrillada Familiar Jhunay" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/18181b/f59e0b?text=Familiar'">
+                        <div class="absolute top-3 right-3 bg-grillDark/80 backdrop-blur-md px-3 py-1 rounded-full text-grillGold font-bold text-sm border border-grillBorder">$14.99</div>
+                        <span class="absolute top-3 left-3 bg-grillRed text-white text-xs px-2.5 py-1 rounded-full font-bold uppercase">4-5 Personas</span>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-heading text-lg font-bold text-white">Parrillada Familiar Jhunay</h3>
+                            <p class="text-gray-400 text-sm mt-1">2 filetes de pollo, 2 chuletas, 2 lomos, 4 chorizos, 8 camarones al grill, papas crocantes, arroz moro y ensalada.</p>
+                        </div>
+                        <button onclick="addToCart('Parrillada Familiar Jhunay', 14.99, 'https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&q=80&w=600')" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus"></i><span>Agregar al Pedido</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-grillRed/50 transition-all group">
+                    <div class="relative h-48 overflow-hidden bg-gray-800">
+                        <img src="https://images.unsplash.com/photo-1603048588665-791ca8aea617?auto=format&fit=crop&q=80&w=600" alt="Ribeye" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/18181b/f59e0b?text=Ribeye'">
+                        <div class="absolute top-3 right-3 bg-grillDark/80 backdrop-blur-md px-3 py-1 rounded-full text-grillGold font-bold text-sm border border-grillBorder">$7.99</div>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-heading text-lg font-bold text-white">Ribeye (Corte Tierno)</h3>
+                            <p class="text-gray-400 text-sm mt-1">Corte jugoso y marmoleado a la parrilla, con guarnición tradicional de la casa.</p>
+                        </div>
+                        <button onclick="addToCart('Ribeye (Corte Tierno)', 7.99, 'https://images.unsplash.com/photo-1603048588665-791ca8aea617?auto=format&fit=crop&q=80&w=600')" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus"></i><span>Agregar al Pedido</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Item 4 -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-grillRed/50 transition-all group">
+                    <div class="relative h-48 overflow-hidden bg-gray-800">
+                        <img src="https://images.unsplash.com/photo-1615937657715-bc7b4b7962c1?auto=format&fit=crop&q=80&w=600" alt="T-Bone Steak" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/18181b/f59e0b?text=T-Bone'">
+                        <div class="absolute top-3 right-3 bg-grillDark/80 backdrop-blur-md px-3 py-1 rounded-full text-grillGold font-bold text-sm border border-grillBorder">$8.99</div>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-heading text-lg font-bold text-white">T-Bone Steak</h3>
+                            <p class="text-gray-400 text-sm mt-1>Lo mejor de dos mundos: Lomo fino y chuletón en un solo corte perfecto al carbón.</p>
+                        </div>
+                        <button onclick="addToCart('T-Bone Steak', 8.99, 'https://images.unsplash.com/photo-1615937657715-bc7b4b7962c1?auto=format&fit=crop&q=80&w=600')" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus"></i><span>Agregar al Pedido</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Item 5 -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-grillRed/50 transition-all group">
+                    <div class="relative h-48 overflow-hidden bg-gray-800">
+                        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=600" alt="Picaña Grill" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/18181b/f59e0b?text=Picana'">
+                        <div class="absolute top-3 right-3 bg-grillDark/80 backdrop-blur-md px-3 py-1 rounded-full text-grillGold font-bold text-sm border border-grillBorder">$9.99</div>
+                        <span class="absolute top-3 left-3 bg-grillGold text-grillDark text-xs px-2.5 py-1 rounded-full font-bold uppercase">1 LB</span>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-heading text-lg font-bold text-white">Picaña Grill (1 LB)</h3>
+                            <p class="text-gray-400 text-sm mt-1">Corte tradicional brasileño con su característica capa de grasa dorada y jugosa.</p>
+                        </div>
+                        <button onclick="addToCart('Picaña Grill (1 LB)', 9.99, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=600')" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus"></i><span>Agregar al Pedido</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Item 6 -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-grillRed/50 transition-all group">
+                    <div class="relative h-48 overflow-hidden bg-gray-800">
+                        <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=600" alt="Lomichees" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/18181b/f59e0b?text=Lomichees'">
+                        <div class="absolute top-3 right-3 bg-grillDark/80 backdrop-blur-md px-3 py-1 rounded-full text-grillGold font-bold text-sm border border-grillBorder">$5.99</div>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-heading text-lg font-bold text-white">Lomichees (300g)</h3>
+                            <p class="text-gray-400 text-sm mt-1">300g de lomo tierno a la parrilla fundido con abundante queso gratinado.</p>
+                        </div>
+                        <button onclick="addToCart('Lomichees (300g)', 5.99, 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=600')" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus"></i><span>Agregar al Pedido</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Item 7 -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-grillRed/50 transition-all group">
+                    <div class="relative h-48 overflow-hidden bg-gray-800">
+                        <img src="https://images.unsplash.com/photo-1514944298352-f4d73911c6d4?auto=format&fit=crop&q=80&w=600" alt="Borrego al Grill" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/18181b/f59e0b?text=Borrego'">
+                        <div class="absolute top-3 right-3 bg-grillDark/80 backdrop-blur-md px-3 py-1 rounded-full text-grillGold font-bold text-sm border border-grillBorder">$8.99</div>
+                        <span class="absolute top-3 left-3 bg-grillGold text-grillDark text-xs px-2.5 py-1 rounded-full font-bold uppercase">1 LB</span>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-heading text-lg font-bold text-white">Borrego al Grill (1 LB)</h3>
+                            <p class="text-gray-400 text-sm mt-1">Exquisito borrego marinado con especias finas y asado lentamente a la parrilla.</p>
+                        </div>
+                        <button onclick="addToCart('Borrego al Grill (1 LB)', 8.99, 'https://images.unsplash.com/photo-1514944298352-f4d73911c6d4?auto=format&fit=crop&q=80&w=600')" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus"></i><span>Agregar al Pedido</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Item 8 -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-grillRed/50 transition-all group md:col-span-2 lg:col-span-2">
+                    <div class="relative h-48 overflow-hidden bg-gray-800">
+                        <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=800" alt="Picaña Jumbo Fest" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/18181b/f59e0b?text=Jumbo'">
+                        <div class="absolute top-3 right-3 bg-grillDark/80 backdrop-blur-md px-3 py-1 rounded-full text-grillGold font-bold text-sm border border-grillBorder">$24.99</div>
+                        <span class="absolute top-3 left-3 bg-grillRed text-white text-xs px-2.5 py-1 rounded-full font-bold uppercase">Banquete 1 KG</span>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-heading text-lg font-bold text-white">Picaña Jumbo Fest (1 KG / Banquete)</h3>
+                            <p class="text-gray-400 text-sm mt-1">Picaña a la parrilla con papas fritas, papas criollas, arroz moro, ensalada Jumbo y una jarra de limonada o jugo de temporada.</p>
+                        </div>
+                        <button onclick="addToCart('Picaña Jumbo Fest (1 KG)', 24.99, 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=800')" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus"></i><span>Agregar al Pedido</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- HAMBURGUESAS ARTESANALES -->
+        <section id="section-hamburguesas" class="menu-section space-y-6">
+            <div class="border-l-4 border-grillGold pl-4">
+                <h2 class="font-heading text-2xl sm:text-3xl font-extrabold text-white">Hamburguesas Artesanales</h2>
+                <p class="text-gray-400 text-sm sm:text-base">Carne 100% de res a la parrilla, servidas con papas fritas crujientes.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Clasica -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-grillGold/50 transition-all group">
+                    <div class="relative h-48 overflow-hidden bg-gray-800">
+                        <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=600" alt="Hamburguesa Clásica" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/18181b/f59e0b?text=Burguer'">
+                        <div class="absolute top-3 right-3 bg-grillDark/80 backdrop-blur-md px-3 py-1 rounded-full text-grillGold font-bold text-sm border border-grillBorder">Desde $1.50</div>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-heading text-lg font-bold text-white">Hamburguesa Clásica</h3>
+                            <p class="text-gray-400 text-sm mt-1">Carne jugosa, queso, huevo frito, tocino crocante y papas.</p>
+                            <div class="mt-3 flex gap-2 text-xs">
+                                <span class="bg-grillBorder px-2.5 py-1 rounded-lg text-gray-300 font-medium">Simple: $1.50</span>
+                                <span class="bg-grillBorder px-2.5 py-1 rounded-lg text-gray-300 font-medium">Doble: $2.99</span>
+                                <span class="bg-grillBorder px-2.5 py-1 rounded-lg text-gray-300 font-medium">Triple: $3.99</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 pt-2">
+                            <button onclick="addToCart('Hamburguesa Clásica Simple', 1.50, 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=600')" class="bg-grillBorder hover:bg-grillRed hover:text-white text-gray-200 py-2 rounded-xl text-xs font-bold transition-all">Simple ($1.50)</button>
+                            <button onclick="addToCart('Hamburguesa Clásica Doble', 2.99, 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=600')" class="bg-grillBorder hover:bg-grillRed hover:text-white text-gray-200 py-2 rounded-xl text-xs font-bold transition-all">Doble ($2.99)</button>
+                            <button onclick="addToCart('Hamburguesa Clásica Triple', 3.99, 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=600')" class="bg-grillBorder hover:bg-grillRed hover:text-white text-gray-200 py-2 rounded-xl text-xs font-bold transition-all">Triple ($3.99)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hawaiiana -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-grillGold/50 transition-all group">
+                    <div class="relative h-48 overflow-hidden bg-gray-800">
+                        <img src="https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&q=80&w=600" alt="Hawaiiana" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/18181b/f59e0b?text=Hawaiiana'">
+                        <div class="absolute top-3 right-3 bg-grillDark/80 backdrop-blur-md px-3 py-1 rounded-full text-grillGold font-bold text-sm border border-grillBorder">$3.99</div>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-heading text-lg font-bold text-white">Hamburguesa Hawaiiana</h3>
+                            <p class="text-gray-400 text-sm mt-1">Carne artesanal, queso, jamón, piña caramelizada y papas fritas.</p>
+                        </div>
+                        <button onclick="addToCart('Hamburguesa Hawaiiana', 3.99, 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&q=80&w=600')" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus"></i><span>Agregar al Pedido</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Jack Daniel's Special -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-grillGold/50 transition-all group">
+                    <div class="relative h-48 overflow-hidden bg-gray-800">
+                        <img src="https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&q=80&w=600" alt="Jack Daniels Special" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/18181b/f59e0b?text=JackDaniels'">
+                        <div class="absolute top-3 right-3 bg-grillDark/80 backdrop-blur-md px-3 py-1 rounded-full text-grillGold font-bold text-sm border border-grillBorder">$4.99</div>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-heading text-lg font-bold text-white">Jack Daniel's Special</h3>
+                            <p class="text-gray-400 text-sm mt-1">Carne artesanal, queso, salsa artesanal de whisky Jack Daniel's y papas.</p>
+                        </div>
+                        <button onclick="addToCart('Jack Daniel\'s Special', 4.99, 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&q=80&w=600')" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus"></i><span>Agregar al Pedido</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Champiñones Gourmet -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-grillGold/50 transition-all group md:col-span-2 lg:col-span-1">
+                    <div class="relative h-48 overflow-hidden bg-gray-800">
+                        <img src="https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?auto=format&fit=crop&q=80&w=600" alt="Champiñones Gourmet" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/18181b/f59e0b?text=Champiñones'">
+                        <div class="absolute top-3 right-3 bg-grillDark/80 backdrop-blur-md px-3 py-1 rounded-full text-grillGold font-bold text-sm border border-grillBorder">$3.99</div>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-heading text-lg font-bold text-white">Champiñones Gourmet</h3>
+                            <p class="text-gray-400 text-sm mt-1">Carne, queso y cremosa salsa de champiñones con papas fritas.</p>
+                        </div>
+                        <button onclick="addToCart('Champiñones Gourmet', 3.99, 'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?auto=format&fit=crop&q=80&w=600')" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus"></i><span>Agregar al Pedido</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ALITAS CRUJIENTES -->
+        <section id="section-alitas" class="menu-section space-y-6">
+            <div class="border-l-4 border-orange-500 pl-4">
+                <h2 class="font-heading text-2xl sm:text-3xl font-extrabold text-white">Alitas Crujientes</h2>
+                <p class="text-gray-400 text-sm sm:text-base">Acompañadas de papas fritas y ensalada fresca. Incluye salsa a elección.</p>
+            </div>
+
+            <div class="bg-grillCard border border-grillBorder p-4 sm:p-6 rounded-2xl mb-6 text-xs sm:text-sm text-gray-300">
+                <span class="font-bold text-grillGold uppercase tracking-wider block mb-1"><i class="fa-solid fa-fire mr-1"></i> Salsas a Elección:</span>
+                <p class="text-gray-400">BBQ, Champiñones, Miel Mostaza, Jack Daniel's, Maracuyá, Vino Tinto, Tocineta, Teriyaki, Mango Chile, La Diabla.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- 6 Unidades -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-orange-500/50 transition-all group">
+                    <div class="relative h-48 overflow-hidden bg-gray-800">
+                        <img src="https://images.unsplash.com/photo-1527477396000-e27163b481c2?auto=format&fit=crop&q=80&w=600" alt="6 Alitas" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/18181b/f59e0b?text=Alitas'">
+                        <div class="absolute top-3 right-3 bg-grillDark/80 backdrop-blur-md px-3 py-1 rounded-full text-grillGold font-bold text-sm border border-grillBorder">$4.99</div>
+                        <span class="absolute top-3 left-3 bg-orange-600 text-white text-xs px-2.5 py-1 rounded-full font-bold uppercase">6 Unidades</span>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-heading text-lg font-bold text-white">Alitas x6 Unidades</h3>
+                            <p class="text-gray-400 text-sm mt-1">6 alitas crujientes con papas fritas, ensalada y 1 salsa a elección.</p>
+                        </div>
+                        <button onclick="addToCart('Alitas x6 Unidades', 4.99, 'https://images.unsplash.com/photo-1527477396000-e27163b481c2?auto=format&fit=crop&q=80&w=600')" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus"></i><span>Agregar al Pedido</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 9 Unidades -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-orange-500/50 transition-all group">
+                    <div class="relative h-48 overflow-hidden bg-gray-800">
+                        <img src="https://images.unsplash.com/photo-1608039829572-78524f79c4c7?auto=format&fit=crop&q=80&w=600" alt="9 Alitas" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/18181b/f59e0b?text=Alitas'">
+                        <div class="absolute top-3 right-3 bg-grillDark/80 backdrop-blur-md px-3 py-1 rounded-full text-grillGold font-bold text-sm border border-grillBorder">$6.99</div>
+                        <span class="absolute top-3 left-3 bg-orange-600 text-white text-xs px-2.5 py-1 rounded-full font-bold uppercase">9 Unidades</span>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-heading text-lg font-bold text-white">Alitas x9 Unidades</h3>
+                            <p class="text-gray-400 text-sm mt-1">9 alitas crujientes con papas fritas, ensalada y salsa a elección.</p>
+                        </div>
+                        <button onclick="addToCart('Alitas x9 Unidades', 6.99, 'https://images.unsplash.com/photo-1608039829572-78524f79c4c7?auto=format&fit=crop&q=80&w=600')" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus"></i><span>Agregar al Pedido</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 13 Unidades -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-orange-500/50 transition-all group">
+                    <div class="relative h-48 overflow-hidden bg-gray-800">
+                        <img src="https://images.unsplash.com/photo-1567620832903-9fc6debc209f?auto=format&fit=crop&q=80&w=600" alt="13 Alitas" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/18181b/f59e0b?text=Alitas'">
+                        <div class="absolute top-3 right-3 bg-grillDark/80 backdrop-blur-md px-3 py-1 rounded-full text-grillGold font-bold text-sm border border-grillBorder">$9.99</div>
+                        <span class="absolute top-3 left-3 bg-orange-600 text-white text-xs px-2.5 py-1 rounded-full font-bold uppercase">13 Unidades</span>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-heading text-lg font-bold text-white">Alitas x13 Unidades</h3>
+                            <p class="text-gray-400 text-sm mt-1">13 alitas crujientes ideales para compartir, con papas y ensalada.</p>
+                        </div>
+                        <button onclick="addToCart('Alitas x13 Unidades', 9.99, 'https://images.unsplash.com/photo-1567620832903-9fc6debc209f?auto=format&fit=crop&q=80&w=600')" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus"></i><span>Agregar al Pedido</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PICADITAS & ENTRADAS -->
+        <section id="section-picaditas" class="menu-section space-y-6">
+            <div class="border-l-4 border-yellow-600 pl-4">
+                <h2 class="font-heading text-2xl sm:text-3xl font-extrabold text-white">Picaditas & Entradas para Compartir</h2>
+                <p class="text-gray-400 text-sm sm:text-base">El mejor piqueo tradicional y urbano para abrir el apetito.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Pan de Ajo con Tuetano -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-yellow-600/50 transition-all group">
+                    <div class="relative h-48 overflow-hidden bg-gray-800">
+                        <img src="https://images.unsplash.com/photo-1573140247632-f8fd74997d5c?auto=format&fit=crop&q=80&w=600" alt="Pan de Ajo con Tuétano" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/18181b/f59e0b?text=PanDeAjo'">
+                        <div class="absolute top-3 right-3 bg-grillDark/80 backdrop-blur-md px-3 py-1 rounded-full text-grillGold font-bold text-sm border border-grillBorder">$4.99</div>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-heading text-lg font-bold text-white">Pan de Ajo con Tuétano a la Parrilla</h3>
+                            <p class="text-gray-400 text-sm mt-1">Tajadas de pan tostado con mantequilla de ajo, orégano, tuétano horneado y chimichurri de la casa.</p>
+                        </div>
+                        <button onclick="addToCart('Pan de Ajo con Tuétano', 4.99, 'https://images.unsplash.com/photo-1573140247632-f8fd74997d5c?auto=format&fit=crop&q=80&w=600')" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus"></i><span>Agregar al Pedido</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Picadita Manaba -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-yellow-600/50 transition-all group">
+                    <div class="relative h-48 overflow-hidden bg-gray-800">
+                        <img src="https://images.unsplash.com/photo-1541544741938-0af808871cc0?auto=format&fit=crop&q=80&w=600" alt="Picadita Manaba" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/18181b/f59e0b?text=Manaba'">
+                        <div class="absolute top-3 right-3 bg-grillDark/80 backdrop-blur-md px-3 py-1 rounded-full text-grillGold font-bold text-sm border border-grillBorder">$5.99</div>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-heading text-lg font-bold text-white">Picadita Manaba</h3>
+                            <p class="text-gray-400 text-sm mt-1">Longaniza manaba, tajaditas de maduro frito, patacones crocantes con queso y sal prieta.</p>
+                        </div>
+                        <button onclick="addToCart('Picadita Manaba', 5.99, 'https://images.unsplash.com/photo-1541544741938-0af808871cc0?auto=format&fit=crop&q=80&w=600')" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus"></i><span>Agregar al Pedido</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Picadita Andina -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-yellow-600/50 transition-all group">
+                    <div class="relative h-48 overflow-hidden bg-gray-800">
+                        <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=80&w=600" alt="Picadita Andina" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/18181b/f59e0b?text=Andina'">
+                        <div class="absolute top-3 right-3 bg-grillDark/80 backdrop-blur-md px-3 py-1 rounded-full text-grillGold font-bold text-sm border border-grillBorder">$6.99</div>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-heading text-lg font-bold text-white">Picadita Andina</h3>
+                            <p class="text-gray-400 text-sm mt-1">Picadita de mollejas y cuero crocante con papas criollas, choclo tierno y encurtido tradicional.</p>
+                        </div>
+                        <button onclick="addToCart('Picadita Andina', 6.99, 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=80&w=600')" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus"></i><span>Agregar al Pedido</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Chees Nachos -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-yellow-600/50 transition-all group">
+                    <div class="relative h-48 overflow-hidden bg-gray-800">
+                        <img src="https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?auto=format&fit=crop&q=80&w=600" alt="Chees Nachos" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/18181b/f59e0b?text=Nachos'">
+                        <div class="absolute top-3 right-3 bg-grillDark/80 backdrop-blur-md px-3 py-1 rounded-full text-grillGold font-bold text-sm border border-grillBorder">$3.99</div>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-heading text-lg font-bold text-white">Chees Nachos</h3>
+                            <p class="text-gray-400 text-sm mt-1">Nachos crocantes cubiertos con carne molida sazonada, tocino, queso gratinado y guacamole.</p>
+                        </div>
+                        <button onclick="addToCart('Chees Nachos', 3.99, 'https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?auto=format&fit=crop&q=80&w=600')" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus"></i><span>Agregar al Pedido</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Salchipapa Monster Jhunay -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-yellow-600/50 transition-all group">
+                    <div class="relative h-48 overflow-hidden bg-gray-800">
+                        <img src="https://images.unsplash.com/photo-1585109649139-366815a0d713?auto=format&fit=crop&q=80&w=600" alt="Salchipapa Monster" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/18181b/f59e0b?text=Salchipapa'">
+                        <div class="absolute top-3 right-3 bg-grillDark/80 backdrop-blur-md px-3 py-1 rounded-full text-grillGold font-bold text-sm border border-grillBorder">$6.99</div>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-heading text-lg font-bold text-white">Salchipapa Monster Jhunay</h3>
+                            <p class="text-gray-400 text-sm mt-1">Picadita de lomo con longaniza ahumada, tocino y papas fritas bañadas en abundante salsa de queso mozzarella gratinado.</p>
+                        </div>
+                        <button onclick="addToCart('Salchipapa Monster Jhunay', 6.99, 'https://images.unsplash.com/photo-1585109649139-366815a0d713?auto=format&fit=crop&q=80&w=600')" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus"></i><span>Agregar al Pedido</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Variantes de Salchipapas y Broaster -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl p-5 shadow-xl flex flex-col justify-between space-y-4">
+                    <div>
+                        <h3 class="font-heading text-lg font-bold text-white mb-2">Salchipapas & Broaster Económicos</h3>
+                        <ul class="space-y-2 text-sm text-gray-300">
+                            <li class="flex justify-between border-b border-grillBorder pb-1.5"><span>Salchi-Simple</span><span class="font-bold text-grillGold">$1.50</span></li>
+                            <li class="flex justify-between border-b border-grillBorder pb-1.5"><span>Salchi-Doble</span><span class="font-bold text-grillGold">$1.99</span></li>
+                            <li class="flex justify-between border-b border-grillBorder pb-1.5"><span>Salchicompleta</span><span class="font-bold text-grillGold">$2.99</span></li>
+                            <li class="flex justify-between pb-1.5"><span>Papipollo Broaster</span><span class="font-bold text-grillGold">$1.99</span></li>
+                        </ul>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="addToCart('Salchi-Completa', 2.99, 'https://images.unsplash.com/photo-1585109649139-366815a0d713?auto=format&fit=crop&q=80&w=600')" class="bg-grillBorder hover:bg-grillRed hover:text-white text-gray-200 py-2 rounded-xl text-xs font-bold transition-all">Salchi-Completa</button>
+                        <button onclick="addToCart('Papipollo Broaster', 1.99, 'https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?auto=format&fit=crop&q=80&w=600')" class="bg-grillBorder hover:bg-grillRed hover:text-white text-gray-200 py-2 rounded-xl text-xs font-bold transition-all">Papipollo</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMBOS ESPECIALES -->
+        <section id="section-combos" class="menu-section space-y-6">
+            <div class="border-l-4 border-emerald-500 pl-4">
+                <h2 class="font-heading text-2xl sm:text-3xl font-extrabold text-white">Combos Especiales</h2>
+                <p class="text-gray-400 text-sm sm:text-base">Combínalos y ahorra disfrutando con amigos o familia.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Combo 1 -->
+                <div class="bg-grillCard border border-emerald-500/30 rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-emerald-500 transition-all group">
+                    <div class="p-6 space-y-4">
+                        <div class="flex justify-between items-start">
+                            <span class="bg-emerald-500 text-grillDark font-extrabold text-xs px-3 py-1 rounded-full uppercase">Combo 1</span>
+                            <span class="font-heading text-xl font-bold text-grillGold">$5.99</span>
+                        </div>
+                        <h3 class="font-heading text-lg font-bold text-white">Combo Dúo Burger & Wings</h3>
+                        <p class="text-gray-400 text-sm">1 Hamburguesa + 5 Alitas (salsa a elección) + papas fritas + ensalada fresca.</p>
+                    </div>
+                    <div class="p-6 pt-0">
+                        <button onclick="addToCart('Combo 1 (Burger + 5 Alitas)', 5.99, 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&q=80&w=600')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2 shadow-lg shadow-emerald-600/20">
+                            <i class="fa-solid fa-plus"></i><span>Pedir Combo 1</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Combo 2 -->
+                <div class="bg-grillCard border border-emerald-500/30 rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-emerald-500 transition-all group">
+                    <div class="p-6 space-y-4">
+                        <div class="flex justify-between items-start">
+                            <span class="bg-emerald-500 text-grillDark font-extrabold text-xs px-3 py-1 rounded-full uppercase">Combo 2</span>
+                            <span class="font-heading text-xl font-bold text-grillGold">$11.99</span>
+                        </div>
+                        <h3 class="font-heading text-lg font-bold text-white">Combo Familiar Fiesta</h3>
+                        <p class="text-gray-400 text-sm">2 Hamburguesas + 12 Alitas (2 sabores) + papas fritas + ensalada fresca.</p>
+                    </div>
+                    <div class="p-6 pt-0">
+                        <button onclick="addToCart('Combo 2 (2 Burgers + 12 Alitas)', 11.99, 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=600')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2 shadow-lg shadow-emerald-600/20">
+                            <i class="fa-solid fa-plus"></i><span>Pedir Combo 2</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Combo 3 -->
+                <div class="bg-grillCard border border-emerald-500/30 rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-emerald-500 transition-all group">
+                    <div class="p-6 space-y-4">
+                        <div class="flex justify-between items-start">
+                            <span class="bg-emerald-500 text-grillDark font-extrabold text-xs px-3 py-1 rounded-full uppercase">Combo 3</span>
+                            <span class="font-heading text-xl font-bold text-grillGold">$4.99</span>
+                        </div>
+                        <h3 class="font-heading text-lg font-bold text-white">Combo Broaster Pollo</h3>
+                        <p class="text-gray-400 text-sm">5 Presas Broaster crocantes + papas fritas doradas + ensalada fresca.</p>
+                    </div>
+                    <div class="p-6 pt-0">
+                        <button onclick="addToCart('Combo 3 (5 Presas Broaster)', 4.99, 'https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?auto=format&fit=crop&q=80&w=600')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2 shadow-lg shadow-emerald-600/20">
+                            <i class="fa-solid fa-plus"></i><span>Pedir Combo 3</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COCTELERÍA, PECERAS & CERVEZAS -->
+        <section id="section-cocteles" class="menu-section space-y-6">
+            <div class="border-l-4 border-purple-500 pl-4">
+                <h2 class="font-heading text-2xl sm:text-3xl font-extrabold text-white">Coctelería, Peceras & Cervezas</h2>
+                <p class="text-gray-400 text-sm sm:text-base">El toque alegre de la noche en Jhunay Resto Bar.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Peceras y Juegos -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl p-6 shadow-xl flex flex-col justify-between space-y-4">
+                    <div>
+                        <h3 class="font-heading text-lg font-bold text-white mb-3 flex items-center"><i class="fa-solid fa-champagne-glasses text-purple-400 mr-2"></i> Peceras & Juegos</h3>
+                        <ul class="space-y-3 text-sm text-gray-300">
+                            <li class="flex justify-between border-b border-grillBorder pb-2"><span>Pecera Mediana</span><span class="font-bold text-grillGold">$4.99</span></li>
+                            <li class="flex justify-between border-b border-grillBorder pb-2"><span>Pecera Grande Jhunay</span><span class="font-bold text-grillGold">$14.99</span></li>
+                            <li class="flex justify-between pb-2"><span>Ruleta de Shots (Juego)</span><span class="font-bold text-grillGold">$9.99</span></li>
+                        </ul>
+                    </div>
+                    <button onclick="addToCart('Pecera Mediana', 4.99, 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=600')" class="w-full bg-purple-600/20 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/30 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-plus"></i><span>Agregar Pecera Mediana</span>
+                    </button>
+                </div>
+
+                <!-- Cocteles Clasicos -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl p-6 shadow-xl flex flex-col justify-between space-y-4">
+                    <div>
+                        <h3 class="font-heading text-lg font-bold text-white mb-2 flex items-center"><i class="fa-solid fa-martini-glass-citrus text-purple-400 mr-2"></i> Cocteles Clásicos & Autor</h3>
+                        <p class="text-xs text-gray-400 mb-3">Mojito / Margarita / Destornillador / Cuba Libre / Canabis</p>
+                        <ul class="space-y-2 text-sm text-gray-300">
+                            <li class="flex justify-between border-b border-grillBorder pb-2"><span>Vaso Normal</span><span class="font-bold text-grillGold">$3.50</span></li>
+                            <li class="flex justify-between border-b border-grillBorder pb-2"><span>Combo x3 Vasos</span><span class="font-bold text-grillGold">$9.00</span></li>
+                            <li class="flex justify-between border-b border-grillBorder pb-2"><span>Shots Especiales (Vaso)</span><span class="font-bold text-grillGold">$1.99</span></li>
+                            <li class="flex justify-between pb-2"><span>Shots (Combo x3)</span><span class="font-bold text-grillGold">$4.99</span></li>
+                        </ul>
+                    </div>
+                    <button onclick="addToCart('Coctel Clásico (Vaso)', 3.50, 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&q=80&w=600')" class="w-full bg-purple-600/20 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/30 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-plus"></i><span>Agregar Coctel Clásico</span>
+                    </button>
+                </div>
+
+                <!-- Cervezas y Micheladas -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl p-6 shadow-xl flex flex-col justify-between space-y-4 md:col-span-2 lg:col-span-1">
+                    <div>
+                        <h3 class="font-heading text-lg font-bold text-white mb-2 flex items-center"><i class="fa-solid fa-beer-mug-empty text-purple-400 mr-2"></i> Cervezas & Micheladas</h3>
+                        <p class="text-xs text-gray-400 mb-3">Micheladas: Maracuyá, Mango, Limón, Tamarindo ($3.50)</p>
+                        <ul class="space-y-2 text-sm text-gray-300">
+                            <li class="flex justify-between border-b border-grillBorder pb-1.5"><span>Pilsener 1 Litro</span><span class="font-bold text-grillGold">$3.50 (x3: $10)</span></li>
+                            <li class="flex justify-between border-b border-grillBorder pb-1.5"><span>Club 1 Litro</span><span class="font-bold text-grillGold">$3.99 (x3: $11)</span></li>
+                            <li class="flex justify-between pb-1.5"><span>Corona Extra</span><span class="font-bold text-grillGold">$2.99 (x3: $6.99)</span></li>
+                        </ul>
+                    </div>
+                    <button onclick="addToCart('Pilsener 1 Litro', 3.50, 'https://images.unsplash.com/photo-1608270120063-22d715ac2337?auto=format&fit=crop&q=80&w=600')" class="w-full bg-purple-600/20 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/30 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-plus"></i><span>Agregar Pilsener 1L</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- JUGOS & MILKSHAKES -->
+        <section id="section-bebidas" class="menu-section space-y-6">
+            <div class="border-l-4 border-blue-400 pl-4">
+                <h2 class="font-heading text-2xl sm:text-3xl font-extrabold text-white">Jugos & Milkshakes</h2>
+                <p class="text-gray-400 text-sm sm:text-base">Refrescantes y cremosos para acompañar cualquier plato.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Milkshakes -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-blue-400/50 transition-all group">
+                    <div class="relative h-48 overflow-hidden bg-gray-800">
+                        <img src="https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&q=80&w=600" alt="Milkshake" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/18181b/f59e0b?text=Milkshake'">
+                        <div class="absolute top-3 right-3 bg-grillDark/80 backdrop-blur-md px-3 py-1 rounded-full text-grillGold font-bold text-sm border border-grillBorder">$3.50</div>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-heading text-lg font-bold text-white">Milkshake Cream</h3>
+                            <p class="text-gray-400 text-sm mt-1">Sabores disponibles: Oreo, Café, Chocolate.</p>
+                        </div>
+                        <button onclick="addToCart('Milkshake Cream', 3.50, 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&q=80&w=600')" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus"></i><span>Agregar Milkshake</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Jarra de Jugo / Limonada -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-blue-400/50 transition-all group">
+                    <div class="relative h-48 overflow-hidden bg-gray-800">
+                        <img src="https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&q=80&w=600" alt="Limonada Jarra" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/18181b/f59e0b?text=JarraJugo'">
+                        <div class="absolute top-3 right-3 bg-grillDark/80 backdrop-blur-md px-3 py-1 rounded-full text-grillGold font-bold text-sm border border-grillBorder">$3.99</div>
+                        <span class="absolute top-3 left-3 bg-blue-500 text-grillDark text-xs px-2.5 py-1 rounded-full font-bold uppercase">Jarra Familiar</span>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-heading text-lg font-bold text-white">Limonada / Jugos Naturales</h3>
+                            <p class="text-gray-400 text-sm mt-1">Jarra familiar refrescante de limonada o jugo de temporada.</p>
+                        </div>
+                        <button onclick="addToCart('Jarra de Limonada / Jugo Natural', 3.99, 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&q=80&w=600')" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus"></i><span>Agregar Jarra</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Vaso de Jugo -->
+                <div class="bg-grillCard border border-grillBorder rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-blue-400/50 transition-all group">
+                    <div class="relative h-48 overflow-hidden bg-gray-800">
+                        <img src="https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&q=80&w=600" alt="Vaso de Jugo" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" onerror="this.src='https://placehold.co/600x400/18181b/f59e0b?text=VasoJugo'">
+                        <div class="absolute top-3 right-3 bg-grillDark/80 backdrop-blur-md px-3 py-1 rounded-full text-grillGold font-bold text-sm border border-grillBorder">$1.50</div>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-heading text-lg font-bold text-white">Vaso de Jugo de Temporada</h3>
+                            <p class="text-gray-400 text-sm mt-1">Vaso individual de jugo natural fresco de frutas de la estación.</p>
+                        </div>
+                        <button onclick="addToCart('Vaso de Jugo de Temporada', 1.50, 'https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&q=80&w=600')" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus"></i><span>Agregar Vaso de Jugo</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer / Contact -->
+    <footer class="bg-grillCard border-t border-grillBorder mt-20 pt-12 pb-16 px-4">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+            <div class="space-y-3">
+                <div class="flex items-center justify-center md:justify-start space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-grillRed to-grillGold flex items-center justify-center">
+                        <i class="fa-solid fa-fire text-white"></i>
+                    </div>
+                    <span class="font-heading font-black text-xl tracking-wider text-white">JHUNAY RESTO BAR</span>
+                </div>
+                <p class="text-gray-400 text-sm">Fast Food & Grill Since 1992. El mejor sabor y ambiente familiar para disfrutar cada momento.</p>
+            </div>
+            
+            <div class="space-y-3">
+                <h4 class="font-heading font-bold text-white text-base">Contacto & Pedidos</h4>
+                <p class="text-gray-300 text-sm flex items-center justify-center md:justify-start space-x-2">
+                    <i class="fa-solid fa-phone text-grillGold"></i>
+                    <span>Pedidos & Reservas: <strong>096 396 9957</strong></span>
+                </p>
+                <div class="flex justify-center md:justify-start space-x-4 pt-2">
+                    <a href="https://tiktok.com/@Jhunaygrill" target="_blank" class="w-9 h-9 rounded-full bg-grillBorder flex items-center justify-center text-gray-300 hover:text-white hover:bg-grillRed transition-all"><i class="fa-brands fa-tiktok"></i></a>
+                    <a href="https://facebook.com" target="_blank" class="w-9 h-9 rounded-full bg-grillBorder flex items-center justify-center text-gray-300 hover:text-white hover:bg-grillRed transition-all"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="https://wa.me/593963969957" target="_blank" class="w-9 h-9 rounded-full bg-grillBorder flex items-center justify-center text-gray-300 hover:text-white hover:bg-emerald-600 transition-all"><i class="fa-brands fa-whatsapp"></i></a>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <h4 class="font-heading font-bold text-white text-base">Redes Sociales</h4>
+                <p class="text-gray-400 text-sm">TikTok: @Jhunaygrill | @Jhunay-biker</p>
+                <p class="text-gray-400 text-sm">Facebook: Jhunay grill</p>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto border-t border-grillBorder mt-8 pt-6 text-center text-xs text-gray-500">
+            &copy; 1992 - 2026 JHUNAY RESTO BAR. Todos los derechos reservados.
+        </div>
+    </footer>
+
+    <!-- Cart Modal / Floating Drawer -->
+    <div id="cart-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex justify-end transition-opacity">
+        <div class="bg-grillCard w-full max-w-md h-full flex flex-col border-l border-grillBorder shadow-2xl">
+            <div class="p-5 border-b border-grillBorder flex items-center justify-between bg-grillDark">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-cart-shopping text-grillRed"></i>
+                    <h3 class="font-heading font-bold text-lg text-white">Tu Pedido Actual</h3>
+                </div>
+                <button onclick="toggleCartModal()" class="text-gray-400 hover:text-white p-2"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <div id="cart-items-container" class="flex-1 overflow-y-auto p-5 space-y-4 divide-y divide-grillBorder">
+                <!-- Cart items dynamically injected -->
+                <p id="empty-cart-msg" class="text-gray-500 text-center py-10">Tu carrito está vacío. ¡Agrega tus platos favoritos!</p>
+            </div>
+
+            <div class="p-5 border-t border-grillBorder bg-grillDark space-y-4">
+                <div class="flex justify-between items-center text-lg font-bold">
+                    <span class="text-gray-300">Total a Pagar:</span>
+                    <span id="cart-total" class="text-grillGold font-heading text-2xl">$0.00</span>
+                </div>
+                <button onclick="sendWhatsAppOrder()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-600/30 flex items-center justify-center space-x-2 transition-all">
+                    <i class="fa-brands fa-whatsapp text-xl"></i>
+                    <span>Enviar Pedido por WhatsApp</span>
+                </button>
+                <button onclick="clearCart()" class="w-full bg-grillBorder hover:bg-gray-700 text-gray-300 font-semibold py-2 rounded-xl text-xs transition-all">
+                    Vaciar Carrito
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        let cart = [];
+
+        // Category Filter Logic
+        function filterCategory(category) {
+            // Update active button styles
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.classList.remove('bg-grillRed', 'text-white', 'shadow-md');
+                btn.classList.add('bg-grillCard', 'text-gray-300', 'border', 'border-grillBorder');
+            });
+            event.currentTarget.classList.remove('bg-grillCard', 'text-gray-300', 'border', 'border-grillBorder');
+            event.currentTarget.classList.add('bg-grillRed', 'text-white', 'shadow-md');
+
+            // Show/Hide sections
+            const sections = document.querySelectorAll('.menu-section');
+            sections.forEach(sec => {
+                if (category === 'all' || sec.id === 'section-' + category) {
+                    sec.style.display = 'block';
+                } else {
+                    sec.style.display = 'none';
+                }
+            });
+        }
+
+        // Cart Functions
+        function toggleCartModal() {
+            const modal = document.getElementById('cart-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        function addToCart(name, price, img) {
+            const existingItem = cart.find(item => item.name === name);
+            if (existingItem) {
+                existingItem.qty += 1;
+            } else {
+                cart.push({ name, price, qty: 1, img });
+            }
+            updateCartUI();
+            
+            // Show subtle feedback animation or notification
+            const badge = document.getElementById('cart-badge');
+            badge.classList.remove('hidden');
+            badge.classList.add('animate-bounce');
+            setTimeout(() => badge.classList.remove('animate-bounce'), 1000);
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cart-items-container');
+            const badge = document.getElementById('cart-badge');
+            const totalEl = document.getElementById('cart-total');
+            const emptyMsg = document.getElementById('empty-cart-msg');
+
+            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            if (totalItems > 0) {
+                badge.innerText = totalItems;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+
+            if (cart.length === 0) {
+                container.innerHTML = `<p id="empty-cart-msg" class="text-gray-500 text-center py-10">Tu carrito está vacío. ¡Agrega tus platos favoritos!</p>`;
+                totalEl.innerText = '$0.00';
+                return;
+            }
+
+            let html = '';
+            let total = 0;
+
+            cart.forEach((item, index) => {
+                const itemTotal = item.price * item.qty;
+                total += itemTotal;
+                html += `
+                    <div class="flex items-center justify-between pt-4 first:pt-0">
+                        <div class="flex items-center space-x-3">
+                            <img src="${item.img}" alt="${item.name}" class="w-12 h-12 object-cover rounded-xl border border-grillBorder" onerror="this.src='https://placehold.co/100x100/18181b/f59e0b?text=Item'">
+                            <div>
+                                <h4 class="font-heading font-bold text-sm text-white">${item.name}</h4>
+                                <p class="text-xs text-grillGold">$${item.price.toFixed(2)} c/u</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="updateQty(${index}, -1)" class="w-7 h-7 rounded-lg bg-grillBorder text-gray-300 hover:text-white flex items-center justify-center text-xs">-</button>
+                            <span class="text-sm font-bold w-5 text-center">${item.qty}</span>
+                            <button onclick="updateQty(${index}, 1)" class="w-7 h-7 rounded-lg bg-grillBorder text-gray-300 hover:text-white flex items-center justify-center text-xs">+</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            totalEl.innerText = '$' + total.toFixed(2);
+        }
+
+        function updateQty(index, change) {
+            cart[index].qty += change;
+            if (cart[index].qty <= 0) {
+                cart.splice(index, 1);
+            }
+            updateCartUI();
+        }
+
+        function clearCart() {
+            cart = [];
+            updateCartUI();
+        }
+
+        function sendWhatsAppOrder() {
+            if (cart.length === 0) {
+                alert('Tu carrito está vacío.');
+                return;
+            }
+
+            let message = 'Hola Jhunay Resto Bar! Deseo realizar el siguiente pedido:%0A%0A';
+            let total = 0;
+
+            cart.forEach(item => {
+                const sub = item.price * item.qty;
+                total += sub;
+                message += `- ${item.qty}x ${item.name} ($${sub.toFixed(2)})%0A`;
+            });
+
+            message += `%0A*Total a Pagar:* $${total.toFixed(2)}%0A%0A(Enviado desde el Menú Digital Interactivo)`;
+            
+            const url = `https://wa.me/593963969957?text=${message}`;
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+</html>
