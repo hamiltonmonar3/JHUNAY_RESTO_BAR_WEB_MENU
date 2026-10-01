@@ -103,37 +103,13 @@
     </section>
 
     <!-- Category Filter Bar -->
-    <nav id="menu-categories" class="sticky top-20 z-40 bg-grillDark/95 backdrop-blur-md border-b border-grillBorder py-3 px-4 overflow-x-auto shadow-md">
-        <div class="max-w-7xl mx-auto flex space-x-2 sm:space-x-3 min-w-max justify-start sm:justify-center">
-            <button onclick="filterCategory('all')" class="cat-btn active-cat px-4 py-2 rounded-xl text-sm font-bold bg-grillRed text-white transition-all shadow-md">
-                <i class="fa-solid fa-utensils mr-2"></i>Todo
-            </button>
-            <button onclick="filterCategory('parrilladas')" class="cat-btn px-4 py-2 rounded-xl text-sm font-semibold bg-grillCard text-gray-300 hover:bg-grillBorder transition-all border border-grillBorder">
-                <i class="fa-solid fa-fire-flame-curved mr-2 text-grillRed"></i>Parrilladas & Cortes
-            </button>
-            <button onclick="filterCategory('hamburguesas')" class="cat-btn px-4 py-2 rounded-xl text-sm font-semibold bg-grillCard text-gray-300 hover:bg-grillBorder transition-all border border-grillBorder">
-                <i class="fa-solid fa-burger mr-2 text-grillGold"></i>Hamburguesas
-            </button>
-            <button onclick="filterCategory('alitas')" class="cat-btn px-4 py-2 rounded-xl text-sm font-semibold bg-grillCard text-gray-300 hover:bg-grillBorder transition-all border border-grillBorder">
-                <i class="fa-solid fa-drumstick-bite mr-2 text-orange-500"></i>Alitas
-            </button>
-            <button onclick="filterCategory('picaditas')" class="cat-btn px-4 py-2 rounded-xl text-sm font-semibold bg-grillCard text-gray-300 hover:bg-grillBorder transition-all border border-grillBorder">
-                <i class="fa-solid fa-plate-wheat mr-2 text-yellow-600"></i>Picaditas
-            </button>
-            <button onclick="filterCategory('combos')" class="cat-btn px-4 py-2 rounded-xl text-sm font-semibold bg-grillCard text-gray-300 hover:bg-grillBorder transition-all border border-grillBorder">
-                <i class="fa-solid fa-percent mr-2 text-emerald-500"></i>Combos
-            </button>
-            <button onclick="filterCategory('cocteles')" class="cat-btn px-4 py-2 rounded-xl text-sm font-semibold bg-grillCard text-gray-300 hover:bg-grillBorder transition-all border border-grillBorder">
-                <i class="fa-solid fa-wine-glass mr-2 text-purple-400"></i>Cocteles & Bar
-            </button>
-            <button onclick="filterCategory('bebidas')" class="cat-btn px-4 py-2 rounded-xl text-sm font-semibold bg-grillCard text-gray-300 hover:bg-grillBorder transition-all border border-grillBorder">
-                <i class="fa-solid fa-cup-togo mr-2 text-blue-400"></i>Bebidas & Jugos
-            </button>
+    <nav id="menu-categories" class="sticky top-20 z-40 bg-grillDark/95 backdrop-blur-md border-b border-grillBorder py-3 px-4 shadow-md">
+        <div id="menu-category-buttons" class="max-w-7xl mx-auto grid grid-cols-3 sm:grid-cols-4 md:flex md:flex-wrap gap-2 min-w-0 justify-center">
         </div>
     </nav>
 
     <!-- Main Menu Sections -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+    <main id="menu-content" aria-busy="true" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16 hidden">
 
         <!-- PARRILLADAS & CORTES -->
         <section id="section-parrilladas" class="menu-section space-y-6">
@@ -834,23 +810,19 @@
         let cart = [];
 
         // Category Filter Logic
-        function filterCategory(category) {
-            // Update active button styles
+        function filterCategory(category, selectedButton) {
             document.querySelectorAll('.cat-btn').forEach(btn => {
                 btn.classList.remove('bg-grillRed', 'text-white', 'shadow-md');
                 btn.classList.add('bg-grillCard', 'text-gray-300', 'border', 'border-grillBorder');
             });
-            event.currentTarget.classList.remove('bg-grillCard', 'text-gray-300', 'border', 'border-grillBorder');
-            event.currentTarget.classList.add('bg-grillRed', 'text-white', 'shadow-md');
+            if (selectedButton) {
+                selectedButton.classList.remove('bg-grillCard', 'text-gray-300', 'border', 'border-grillBorder');
+                selectedButton.classList.add('bg-grillRed', 'text-white', 'shadow-md');
+            }
 
-            // Show/Hide sections
             const sections = document.querySelectorAll('.menu-section');
             sections.forEach(sec => {
-                if (category === 'all' || sec.id === 'section-' + category) {
-                    sec.style.display = 'block';
-                } else {
-                    sec.style.display = 'none';
-                }
+                sec.classList.toggle('hidden', category !== 'all' && sec.dataset.category !== category);
             });
         }
 
@@ -958,5 +930,7 @@
             window.open(url, '_blank');
         }
     </script>
+    <script src="js/menu-data.js"></script>
+    <script src="js/menu.js"></script>
 </body>
 </html>
