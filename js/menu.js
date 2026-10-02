@@ -31,7 +31,8 @@ const menuGroups = [
   { name: 'Alitas Crujientes', sources: ['ALITAS (SALSAS VARIAS)'] },
   { name: 'Combos Especiales', sources: ['COMBOS'] },
   { name: 'Guarniciones & Ensaladas', sources: ['Guarniciones', 'Ensaladas'] },
-  { name: 'Bebidas, Coctelería & Vinos', sources: ['BEBIDAS Y MALTEADAS', 'MICHELADAS Y CÓCTELES', 'CERVEZAS', 'PECERAS Y ESPECIALES', 'VINOS'] },
+  { name: 'Bebidas', sources: ['BEBIDAS Y MALTEADAS', 'CERVEZAS', 'VINOS'] },
+  { name: 'Coctelería', sources: ['MICHELADAS Y CÓCTELES', 'PECERAS Y ESPECIALES'] },
   { name: 'Postres', sources: ['POSTRES'] }
 ];
 
@@ -235,7 +236,6 @@ function renderCategoryButton(category, index) {
     'Alitas Crujientes': 'Alitas',
     'Combos Especiales': 'Combos',
     'Guarniciones & Ensaladas': 'Guarniciones',
-    'Bebidas, Coctelería & Vinos': 'Bebidas y bar'
   };
   const compactLabel = compactLabels[label] || label;
   const icon = index === -1 ? 'fa-utensils' : categoryIcon(category.name);
@@ -282,6 +282,9 @@ function imageForProduct(name) {
     ['solomillo', 'https://images.unsplash.com/photo-1615937657715-bc7b4b7962c1?auto=format&fit=crop&q=80&w=800'],
     ['filet mignon', 'https://images.unsplash.com/photo-1615937657715-bc7b4b7962c1?auto=format&fit=crop&q=80&w=800'],
     ['bife', 'https://images.unsplash.com/photo-1615937657715-bc7b4b7962c1?auto=format&fit=crop&q=80&w=800'],
+    ['hamburguesa hawaiana', 'images/Hamburguesa_Hawaiana.png'],
+    ['hamburguesa jack daniels', 'images/Hamburguesa_Jack_Daniels.png'],
+    ['hamburguesa champinones', 'images/Hamburguesa_Champiñones.png'],
     ['hamburguesa', 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=800'],
     ['salchipapa monster', 'images/salchi_monster.png'],
     ['salchi-simple', 'images/Salchi-Simple.png'],
@@ -309,10 +312,26 @@ function imageForProduct(name) {
     ['limonada', 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&q=80&w=800'],
     ['jugo', 'https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&q=80&w=800'],
     ['gaseosa', 'https://images.unsplash.com/photo-1554866585-cd94860890b7?auto=format&fit=crop&q=80&w=800'],
+    ['pilsener', 'images/PILSENER.png'],
+    ['club', 'images/Cerveza_CLub.png'],
+    ['corona', 'images/Cerveza_Corona.png'],
     ['cerveza', 'https://images.unsplash.com/photo-1535958636474-b021ee887b13?auto=format&fit=crop&q=80&w=800'],
     ['tinto verano', 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&q=80&w=800'],
-    ['sangria', 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&q=80&w=800'],
+    ['sangria', 'images/Sangria.png'],
     ['vino', 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&q=80&w=800'],
+    ['pecera grande', 'images/Pecera_Grande.png'],
+    ['ruleta de shot', 'images/Ruleta_Shot.png'],
+    ['micheladas', 'images/micheladas.png'],
+    ['mojito', 'images/mojito.png'],
+    ['margarita', 'images/Margarita.png'],
+    ['destornillador', 'images/destornillador.png'],
+    ['cuba libre', 'images/Cuba_Libre.png'],
+    ['tequila sunrise', 'images/Tequila_Sunrise.png'],
+    ['gin tonic', 'images/Gin_Tonic.png'],
+    ['daiquiri de fresa', 'images/Daiquirí_Fresa.png'],
+    ['sexo en la playa', 'images/Sexo_Playa.png'],
+    ['blue lagoon', 'Blue_Lagoon.png'],
+    ['martini', 'Martini.png'],
     ['pecera', 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=800'],
     ['ruleta', 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=800'],
     ['michelada', 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&q=80&w=800'],
@@ -328,9 +347,11 @@ function imageForProduct(name) {
     ['blue lagoon', 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&q=80&w=800'],
     ['herbal', 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&q=80&w=800'],
     ['martini', 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&q=80&w=800'],
-    ['cheesecake', 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&q=80&w=800'],
-    ['crepe', 'https://images.unsplash.com/photo-1484723091739-30a097e8f929?auto=format&fit=crop&q=80&w=800'],
-    ['helado', 'https://images.unsplash.com/photo-1501446529957-6226bd447c46?auto=format&fit=crop&q=80&w=800']
+    ['cheesecake de frutos rojos', 'images/Cheesecake_Frutos_Rojos.png'],
+    ['cheesecake de maracuya', 'images/Cheesecake_Maracuya.png'],
+    ['crepe de nutella', 'images/Crepe_Nutella.png'],
+    ['crepe de fresa', 'images/Crepe_Fresa.png'],
+    ['helado', 'images/Helado.png']
   ];
   const match = imageRules.find(([keyword]) => normalizedName.includes(keyword.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim()));
   return match ? match[1] : 'images/parillada_personal.png';
@@ -369,7 +390,8 @@ function renderMenu(categories) {
     'Alitas Crujientes',
     'Picaditas para Compartir',
     'Combos Especiales',
-    'Bebidas, Coctelería & Vinos'
+    'Bebidas',
+    'Coctelería'
   ]);
   const primaryCategories = categories.filter(category => primaryNames.has(category.name));
   const secondaryCategories = categories.filter(category => !primaryNames.has(category.name));
