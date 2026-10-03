@@ -98,6 +98,13 @@
                     <i class="fa-brands fa-whatsapp text-lg"></i>
                     <span>Pedir por WhatsApp</span>
                 </a>
+                <button id="promotions-open" type="button" disabled aria-describedby="promotions-button-status" onclick="togglePromotionsModal()" class="bg-grillCard hover:bg-grillBorder border border-grillBorder text-white font-bold px-6 py-3 rounded-xl transition-all flex items-center space-x-2 disabled:cursor-not-allowed disabled:opacity-70">
+                    <i class="fa-solid fa-bell text-grillGold"></i>
+                    <span class="flex flex-col items-start text-left">
+                        <span>Recibir notificaciones</span>
+                        <span id="promotions-button-status" class="text-xs font-medium text-gray-400">Próximamente disponible</span>
+                    </span>
+                </button>
             </div>
         </div>
     </section>
@@ -773,6 +780,40 @@
         </div>
     </footer>
 
+    <div id="promotions-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="promotions-title">
+        <div class="w-full max-w-md rounded-2xl border border-grillBorder bg-grillCard p-6 shadow-2xl">
+            <div class="mb-5 flex items-start justify-between gap-4">
+                <div>
+                    <p class="mb-1 text-xs font-bold uppercase tracking-widest text-grillGold">JHUNAY RESTO BAR</p>
+                    <h2 id="promotions-title" class="font-heading text-2xl font-bold text-white">Promociones por WhatsApp</h2>
+                </div>
+                <button type="button" onclick="closePromotionsModal()" aria-label="Cerrar registro de promociones" class="rounded-lg p-2 text-gray-400 hover:bg-grillBorder hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <p class="mb-5 text-sm leading-relaxed text-gray-300">Entérate de promociones como Martes de Alitas 2x1 y descuentos en menestras.</p>
+            <form id="promotions-form" class="space-y-4" novalidate>
+                <div>
+                    <label for="promotions-phone" class="mb-1 block text-sm font-semibold text-white">Tu número de WhatsApp</label>
+                    <input id="promotions-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="09XXXXXXXX o +593 9XXXXXXXX" required class="w-full rounded-xl border border-grillBorder bg-grillDark px-4 py-3 text-white placeholder:text-gray-500 focus:border-grillGold focus:outline-none">
+                    <p class="mt-1 text-xs text-gray-400">Usaremos el código de país de Ecuador (+593).</p>
+                </div>
+                <label class="flex items-start gap-3 text-sm leading-relaxed text-gray-300">
+                    <input id="promotions-consent" name="consent" type="checkbox" required class="mt-1 h-4 w-4 shrink-0 accent-red-500">
+                    <span>Acepto recibir promociones de Jhunay Resto Bar por WhatsApp. Puedo darme de baja en cualquier momento respondiendo <strong class="text-white">BAJA</strong>.</span>
+                </label>
+                <div aria-hidden="true" style="position:absolute;left:-10000px" tabindex="-1">
+                    <label for="promotions-website">Deja este campo vacío</label>
+                    <input id="promotions-website" name="website" type="text" autocomplete="off" tabindex="-1">
+                </div>
+                <p id="promotions-status" class="min-h-5 text-sm" role="status" aria-live="polite"></p>
+                <button id="promotions-submit" type="submit" class="w-full rounded-xl bg-grillRed px-4 py-3 font-bold text-white transition-colors hover:bg-grillRedHover disabled:cursor-wait disabled:opacity-60">
+                    <i class="fa-brands fa-whatsapp mr-2"></i>Registrarme
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- Cart Modal / Floating Drawer -->
     <div id="cart-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex justify-end transition-opacity">
         <div class="bg-grillCard w-full max-w-md h-full flex flex-col border-l border-grillBorder shadow-2xl">
@@ -824,6 +865,16 @@
             sections.forEach(sec => {
                 sec.classList.toggle('hidden', category !== 'all' && sec.dataset.category !== category);
             });
+
+            const targetSection = category === 'all'
+                ? document.querySelector('.menu-section')
+                : document.querySelector(`.menu-section[data-category="${category}"]`);
+            if (targetSection) {
+                const headerHeight = document.querySelector('body > header')?.offsetHeight || 0;
+                const categoryBarHeight = document.getElementById('menu-categories')?.offsetHeight || 0;
+                const targetTop = window.scrollY + targetSection.getBoundingClientRect().top - headerHeight - categoryBarHeight - 12;
+                window.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+            }
         }
 
         // Cart Functions
@@ -930,6 +981,8 @@
             window.open(url, '_blank');
         }
     </script>
+    <script src="js/promotions-config.js"></script>
+    <script src="js/promotions.js"></script>
     <script src="js/menu-data.js"></script>
     <script src="js/menu.js"></script>
 </body>

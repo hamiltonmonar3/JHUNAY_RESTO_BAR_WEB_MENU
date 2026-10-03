@@ -226,6 +226,22 @@ function renderCategoryButton(category, index) {
   const active = index === -1;
   const categoryId = index === -1 ? 'all' : category.id;
   const label = index === -1 ? 'Todo' : category.name;
+  const categoryColors = {
+    all: 'text-amber-300',
+    'parrilladas-especiales': 'text-orange-400',
+    'cortes-al-carbon': 'text-rose-400',
+    'pastas-lasanas': 'text-amber-300',
+    'pinchos-menestras': 'text-lime-400',
+    'picaditas-para-compartir': 'text-yellow-300',
+    'hamburguesas-artesanales': 'text-orange-300',
+    salchipapas: 'text-yellow-400',
+    'alitas-crujientes': 'text-red-400',
+    'combos-especiales': 'text-emerald-400',
+    'guarniciones-ensaladas': 'text-green-400',
+    bebidas: 'text-cyan-300',
+    cocteleria: 'text-fuchsia-300',
+    postres: 'text-pink-300'
+  };
   const compactLabels = {
     'Parrilladas Especiales': 'Parrilladas',
     'Cortes al Carbón': 'Cortes',
@@ -237,16 +253,25 @@ function renderCategoryButton(category, index) {
     'Combos Especiales': 'Combos',
     'Guarniciones & Ensaladas': 'Guarniciones',
   };
+  const displayLabels = {
+    'Parrilladas Especiales': 'Parrilladas',
+    'Picaditas para Compartir': 'Picaditas',
+    'Hamburguesas Artesanales': 'Hamburguesas',
+    'Alitas Crujientes': 'Alitas',
+    'Combos Especiales': 'Combos'
+  };
   const compactLabel = compactLabels[label] || label;
+  const displayLabel = displayLabels[label] || label;
   const icon = index === -1 ? 'fa-utensils' : categoryIcon(category.name);
+  const iconColor = categoryColors[categoryId] || 'text-gray-300';
   const activeClasses = active ? 'bg-grillRed text-white shadow-md' : 'bg-grillCard text-gray-300 border border-grillBorder';
-  return `<button type="button" title="${escapeHtml(label)}" onclick="filterCategory('${categoryId}', this)" class="cat-btn w-full md:w-auto px-2 sm:px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold ${activeClasses} hover:bg-grillBorder transition-all"><i class="fa-solid ${icon} mr-1 sm:mr-2"></i><span class="hidden sm:inline">${escapeHtml(label)}</span><span class="sm:hidden">${escapeHtml(compactLabel)}</span></button>`;
+  return `<button type="button" title="${escapeHtml(label)}" onclick="filterCategory('${categoryId}', this)" class="cat-btn w-full md:w-auto px-2 sm:px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center justify-start gap-1 sm:gap-2 text-left ${activeClasses} hover:bg-grillBorder transition-all"><i class="fa-solid ${icon} ${iconColor} w-4 shrink-0 text-center"></i><span class="hidden sm:inline">${escapeHtml(displayLabel)}</span><span class="sm:hidden">${escapeHtml(compactLabel)}</span></button>`;
 }
 
 function imageForProduct(name) {
   const normalizedName = name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
   const imageRules = [
-    ['parrillada personal', 'images/parillada_personal.png'],
+    ['parrillada personal', 'images/parrillada_personal.png'],
     ['parrillada familiar', 'images/parillada_familiar.png'],
     ['ribeye', 'images/ribaye.png'],
     ['picaña gourmet', 'images/picania.png'],
@@ -261,7 +286,7 @@ function imageForProduct(name) {
     ['solominio', 'images/solominio.png'],
     ['file miño', 'images/filete_mino.png'],
     ['bife de chorizo', 'images/bife_chorizo.png'],
-    ['picadita manaba', 'images/picada_manaba.png'],
+    ['picadita manaba', 'images/picada_manabita.png'],
     ['picadita andina', 'images/picadita_andina.png'],
     ['tuetano', 'images/tuetano.png'],
     ['nachos', 'images/chees_nachos.png'],
@@ -307,6 +332,7 @@ function imageForProduct(name) {
     ['ensalada', 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=800'],
     ['spaghetti', 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&q=80&w=800'],
     ['lasana', 'https://images.unsplash.com/photo-1574894709920-11b28e7367e3?auto=format&fit=crop&q=80&w=800'],
+    ['batidos de frutas', 'images/Batido_Fresa.png'],
     ['milkshake', 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&q=80&w=800'],
     ['batido', 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&q=80&w=800'],
     ['limonada', 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&q=80&w=800'],
@@ -318,10 +344,11 @@ function imageForProduct(name) {
     ['cerveza', 'https://images.unsplash.com/photo-1535958636474-b021ee887b13?auto=format&fit=crop&q=80&w=800'],
     ['tinto verano', 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&q=80&w=800'],
     ['sangria', 'images/Sangria.png'],
+    ['vino hervido', 'images/vino_hervido.png'],
     ['vino', 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&q=80&w=800'],
     ['pecera grande', 'images/Pecera_Grande.png'],
     ['ruleta de shot', 'images/Ruleta_Shot.png'],
-    ['micheladas', 'images/micheladas.png'],
+    ['micheladas', 'images/michelada.png'],
     ['mojito', 'images/mojito.png'],
     ['margarita', 'images/Margarita.png'],
     ['destornillador', 'images/destornillador.png'],
@@ -331,7 +358,8 @@ function imageForProduct(name) {
     ['daiquiri de fresa', 'images/Daiquirí_Fresa.png'],
     ['sexo en la playa', 'images/Sexo_Playa.png'],
     ['blue lagoon', 'Blue_Lagoon.png'],
-    ['martini', 'Martini.png'],
+    ['coctel de messi', 'images/Coctel_Messi.png'],
+    ['martini', 'images/Martini.png'],
     ['pecera', 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=800'],
     ['ruleta', 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=800'],
     ['michelada', 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&q=80&w=800'],
@@ -357,21 +385,44 @@ function imageForProduct(name) {
   return match ? match[1] : 'images/parillada_personal.png';
 }
 
-function renderProduct(product) {
+function renderProduct(product, categoryName = '') {
   const image = imageForProduct(product.name);
-  const variants = product.variants.map(variant => `
-    <button type="button" data-add-product data-product="${escapeHtml(product.name)}" data-item-name="${escapeHtml(variant.itemName || '')}" data-image="${escapeHtml(image)}" data-presentation="${escapeHtml(variant.presentation)}" data-price="${variant.price}" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 px-3 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-between gap-2">
-      <span class="text-left"><i class="fa-solid fa-plus mr-2"></i>${escapeHtml(variant.presentation)}</span>
-      <span class="shrink-0 font-bold">$${variant.price.toFixed(2)}</span>
-    </button>`).join('');
+  const compactImage = ['Bebidas', 'Coctelería'].includes(categoryName);
+  const imageFrameClass = compactImage ? 'relative flex h-24 items-center justify-center overflow-hidden rounded-[20px] bg-gray-800' : 'relative';
+  const imageClass = compactImage ? 'h-24 w-24 shrink-0 rounded-[20px] object-contain' : 'w-full h-40 object-cover bg-gray-800';
+  const singlePrice = product.variants.length === 1
+    ? product.variants[0].price
+    : null;
+  const lowestPrice = Math.min(...product.variants.map(variant => variant.price));
+  const imagePriceLabel = singlePrice === null ? `Desde $${lowestPrice.toFixed(2)}` : `$${lowestPrice.toFixed(2)}`;
+  const hasMultipleVariants = product.variants.length > 1;
+  const variantOptionsId = `variant-options-${slugify(product.name)}`;
+  const variantButtons = product.variants.map(variant => {
+    const actionLabel = singlePrice !== null ? 'Agregar' : variant.presentation;
+    const priceLabel = singlePrice === null ? `<span class="shrink-0 font-bold">$${variant.price.toFixed(2)}</span>` : '';
+    const buttonLayout = singlePrice === null ? 'py-2.5 text-sm justify-between' : 'py-3 text-base justify-center';
+    const textAlignment = singlePrice === null ? 'text-left' : 'text-center';
+    return `
+    <button type="button" data-add-product data-product="${escapeHtml(product.name)}" data-item-name="${escapeHtml(variant.itemName || '')}" data-image="${escapeHtml(image)}" data-presentation="${escapeHtml(variant.presentation)}" data-price="${variant.price}" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 px-3 ${buttonLayout} rounded-xl font-semibold transition-all flex items-center gap-2">
+      <span class="${textAlignment}"><i class="fa-solid fa-plus mr-2"></i>${escapeHtml(actionLabel)}</span>
+      ${priceLabel}
+    </button>`;
+  }).join('');
   const choices = product.choices ? `<label class="block text-sm text-gray-300">Salsa
     <select data-product-choice aria-label="Salsa para las alitas" class="mt-1 w-full bg-grillDark border border-grillBorder rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-grillGold">
       ${product.choices.map(choice => `<option value="${escapeHtml(choice)}">${escapeHtml(choice)}</option>`).join('')}
     </select>
   </label>` : '';
+  const variants = hasMultipleVariants
+    ? `<button type="button" data-toggle-variants aria-expanded="false" aria-controls="${variantOptionsId}" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 px-3 py-3 rounded-xl font-semibold text-base transition-all flex items-center justify-between gap-2"><span><i class="fa-solid fa-plus mr-2"></i>Agregar</span><i data-toggle-icon class="fa-solid fa-chevron-down text-xs"></i></button>
+      <div id="${variantOptionsId}" data-variant-options class="hidden space-y-2">${variantButtons}</div>`
+    : variantButtons;
 
   return `<article class="bg-grillCard border border-grillBorder rounded-xl overflow-hidden shadow-lg flex flex-col gap-4 hover:border-grillRed/50 transition-all">
-    <img src="${escapeHtml(image)}" alt="${escapeHtml(product.name)}" loading="lazy" class="w-full h-44 object-cover bg-gray-800" onerror="this.onerror=null;this.src='images/parillada_personal.png'">
+    <div class="${imageFrameClass}">
+      <img src="${escapeHtml(image)}" alt="${escapeHtml(product.name)}" loading="lazy" class="${imageClass}" onerror="this.onerror=null;this.src='images/parillada_personal.png'">
+      <span class="absolute top-3 right-3 rounded-full border border-red-300 bg-grillRed px-3 py-1 text-sm font-bold text-white shadow-lg shadow-red-950/40">${imagePriceLabel}</span>
+    </div>
     <div class="px-5 space-y-2">
       <h3 class="font-heading text-lg font-bold text-white">${escapeHtml(product.name)}</h3>
       ${product.description ? `<p class="text-gray-400 text-sm leading-relaxed">${escapeHtml(product.description)}</p>` : ''}
@@ -383,31 +434,18 @@ function renderProduct(product) {
 function renderMenu(categories) {
   const buttons = document.getElementById('menu-category-buttons');
   const main = document.getElementById('menu-content');
-  const primaryNames = new Set([
-    'Parrilladas Especiales',
-    'Cortes al Carbón',
-    'Hamburguesas Artesanales',
-    'Alitas Crujientes',
-    'Picaditas para Compartir',
-    'Combos Especiales',
-    'Bebidas',
-    'Coctelería'
-  ]);
-  const primaryCategories = categories.filter(category => primaryNames.has(category.name));
-  const secondaryCategories = categories.filter(category => !primaryNames.has(category.name));
-  const moreButton = `<details id="more-category-menu" class="relative w-full md:w-auto">
-    <summary title="Más categorías" class="cat-btn list-none cursor-pointer w-full md:w-auto px-2 sm:px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-grillCard text-gray-300 border border-grillBorder hover:bg-grillBorder transition-all text-center">
-      <i class="fa-solid fa-ellipsis mr-1 sm:mr-2"></i>Más
-    </summary>
-    <div class="absolute right-0 top-full z-50 mt-2 flex min-w-48 flex-col gap-1 rounded-xl border border-grillBorder bg-grillCard p-2 shadow-xl">
-      ${secondaryCategories.map(category => renderCategoryButton(category, categories.indexOf(category))).join('')}
-    </div>
-  </details>`;
-  buttons.innerHTML = [renderCategoryButton(null, -1), ...primaryCategories.map(category => renderCategoryButton(category, categories.indexOf(category))), moreButton].join('');
+  const sectionTitles = {
+    'Parrilladas Especiales': 'Parrilladas',
+    'Picaditas para Compartir': 'Picaditas',
+    'Hamburguesas Artesanales': 'Hamburguesas',
+    'Alitas Crujientes': 'Alitas',
+    'Combos Especiales': 'Combos'
+  };
+  buttons.innerHTML = [renderCategoryButton(null, -1), ...categories.map((category, index) => renderCategoryButton(category, index))].join('');
   main.innerHTML = categories.map(category => `
     <section id="section-${category.id}" data-category="${category.id}" class="menu-section space-y-6">
       <div class="border-l-4 border-grillRed pl-4">
-        <h2 class="font-heading text-2xl sm:text-3xl font-extrabold text-white">${escapeHtml(category.name)}</h2>
+        <h2 class="font-heading text-2xl sm:text-3xl font-extrabold text-white">${escapeHtml(sectionTitles[category.name] || category.name)}</h2>
         <p class="text-gray-400 text-sm">${category.products.length} ${category.products.length === 1 ? 'producto' : 'productos'}</p>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">${category.products.map(product => renderProduct(product, category.name)).join('')}</div>
@@ -417,6 +455,17 @@ function renderMenu(categories) {
   filterCategory('all', buttons.querySelector('.cat-btn'));
 
   main.addEventListener('click', event => {
+    const toggleButton = event.target.closest('[data-toggle-variants]');
+    if (toggleButton) {
+      const expanded = toggleButton.getAttribute('aria-expanded') === 'true';
+      const options = document.getElementById(toggleButton.getAttribute('aria-controls'));
+      toggleButton.setAttribute('aria-expanded', String(!expanded));
+      options?.classList.toggle('hidden', expanded);
+      toggleButton.querySelector('[data-toggle-icon]')?.classList.toggle('fa-chevron-down', expanded);
+      toggleButton.querySelector('[data-toggle-icon]')?.classList.toggle('fa-chevron-up', !expanded);
+      return;
+    }
+
     const button = event.target.closest('[data-add-product]');
     if (!button) return;
     const presentation = button.dataset.presentation;

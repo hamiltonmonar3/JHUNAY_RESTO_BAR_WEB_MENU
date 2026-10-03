@@ -1,0 +1,8 @@
+[functions.subscribe-promotions]
+verify_jwt = false
+
+[functions.dispatch-promotions]
+verify_jwt = false
+
+[functions.whatsapp-webhook]
+verify_jwt = false
