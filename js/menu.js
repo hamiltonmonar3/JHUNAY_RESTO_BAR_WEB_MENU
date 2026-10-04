@@ -154,6 +154,10 @@ function createSideProduct(name, description, itemNames, sourceProducts) {
 function organizeMenu(categories) {
   const categoriesByName = new Map(categories.map(category => [category.name.toLocaleLowerCase('es'), category]));
   const wingSauces = categoriesByName.get('alitas (salsas varias)')?.products.map(product => product.name.replace(/^Alitas\s*/i, '')) || [];
+  const burgerTypes = (categoriesByName.get('hamburguesas')?.products || []).flatMap(product => {
+    if (product.name === 'Hamburguesa Opciones Base') return product.variants.map(variant => variant.presentation);
+    return [product.name.replace(/^Hamburguesa\s*/i, '')];
+  });
 
   return menuGroups.map(group => {
     let products = group.sources.flatMap(source => categoriesByName.get(source.toLocaleLowerCase('es'))?.products || []);
@@ -179,8 +183,28 @@ function organizeMenu(categories) {
 
     if (group.sources.includes('COMBOS')) {
       products = products.map(product => {
-        if (product.name === 'Combo 1') return { ...product, choices: wingSauces };
-        if (product.name === 'Combo 2') return { ...product, choices: wingSauces, choiceCount: 2 };
+        const requiredCount = product.name === 'Combo 2' ? 2 : 1;
+        if (product.name === 'Combo 1' || product.name === 'Combo 2') {
+          return {
+            ...product,
+            choiceGroups: [
+              {
+                key: 'burger',
+                label: 'Tipo de hamburguesa',
+                detailLabel: requiredCount === 1 ? 'Hamburguesa' : 'Hamburguesas',
+                choices: burgerTypes,
+                requiredCount
+              },
+              {
+                key: 'wings',
+                label: 'Tipo de salsa',
+                detailLabel: requiredCount === 1 ? 'Salsa' : 'Salsas',
+                choices: wingSauces,
+                requiredCount
+              }
+            ]
+          };
+        }
         return product;
       });
     }
@@ -399,12 +423,44 @@ function imageForProduct(name) {
   return match ? match[1] : 'images/parillada_personal.png';
 }
 
+function setDisclosureOpen(toggle, open) {
+  const panel = document.getElementById(toggle.getAttribute('aria-controls'));
+  if (!panel) return;
+
+  toggle.setAttribute('aria-expanded', String(open));
+  panel.classList.toggle('hidden', !open);
+  const icon = toggle.querySelector('[data-disclosure-icon]');
+  icon?.classList.toggle('fa-chevron-down', !open);
+  icon?.classList.toggle('fa-chevron-up', open);
+
+  if (!open || !panel.hasAttribute('data-directional-panel')) return;
+
+  panel.classList.remove('top-full', 'bottom-full', 'mt-2', 'mb-2');
+  panel.classList.add('top-full', 'mt-2');
+  const toggleRect = toggle.getBoundingClientRect();
+  const panelHeight = panel.getBoundingClientRect().height;
+  const spaceBelow = window.innerHeight - toggleRect.bottom - 8;
+  const spaceAbove = toggleRect.top - 8;
+  const openUp = spaceBelow < panelHeight && spaceAbove > spaceBelow;
+  panel.classList.toggle('bottom-full', openUp);
+  panel.classList.toggle('top-full', !openUp);
+  panel.classList.toggle('mb-2', openUp);
+  panel.classList.toggle('mt-2', !openUp);
+}
+
+function closeDisclosures(except = null) {
+  document.querySelectorAll('[data-disclosure-toggle][aria-expanded="true"]').forEach(toggle => {
+    if (toggle !== except) setDisclosureOpen(toggle, false);
+  });
+}
+
 function renderProduct(product, categoryName = '') {
   const image = imageForProduct(product.name);
   const compactImage = ['Bebidas', 'Coctelería'].includes(categoryName);
   const imageFrameClass = compactImage ? 'relative flex h-24 items-center justify-center overflow-hidden rounded-[20px] bg-gray-800' : 'relative overflow-hidden rounded-t-xl';
   const imageClass = compactImage ? 'h-24 w-24 shrink-0 rounded-[20px] object-contain' : 'w-full h-40 object-cover bg-gray-800';
-  const cardOverflowClass = product.choiceCount > 1 ? 'relative z-20 overflow-visible' : 'overflow-hidden';
+  const hasMultiChoiceGroup = product.choiceGroups?.some(group => group.requiredCount > 1);
+  const cardOverflowClass = hasMultiChoiceGroup ? 'relative z-20 overflow-visible' : 'overflow-hidden';
   const singlePrice = product.variants.length === 1
     ? product.variants[0].price
     : null;
@@ -412,7 +468,6 @@ function renderProduct(product, categoryName = '') {
   const imagePriceLabel = singlePrice === null ? `Desde $${lowestPrice.toFixed(2)}` : `$${lowestPrice.toFixed(2)}`;
   const hasMultipleVariants = product.variants.length > 1;
   const variantOptionsId = `variant-options-${slugify(product.name)}`;
-  const sauceOptionsId = `sauce-options-${slugify(product.name)}`;
   const variantButtons = product.variants.map(variant => {
     const actionLabel = singlePrice !== null ? 'Agregar' : variant.presentation;
     const priceLabel = singlePrice === null ? `<span class="shrink-0 font-bold">$${variant.price.toFixed(2)}</span>` : '';
@@ -424,33 +479,44 @@ function renderProduct(product, categoryName = '') {
       ${priceLabel}
     </button>`;
   }).join('');
-  const choices = product.choices?.length
-    ? product.choiceCount > 1
-      ? `<fieldset data-choice-group data-choice-limit="${product.choiceCount}" data-choice-required="${product.choiceCount}" class="relative space-y-2">
-          <button type="button" data-toggle-sauce-options aria-expanded="false" aria-controls="${sauceOptionsId}" class="w-full rounded-xl border border-grillBorder bg-grillDark px-3 py-3 text-left text-sm font-semibold text-gray-200 transition-colors hover:border-grillGold flex items-center justify-between gap-2">
-            <span data-sauce-toggle-label>Tipo de salsa</span>
-            <i data-sauce-toggle-icon class="fa-solid fa-chevron-down text-xs text-grillGold"></i>
-          </button>
-          <div id="${sauceOptionsId}" data-sauce-options class="absolute left-0 right-0 top-full z-50 mt-2 hidden max-h-64 overflow-y-auto rounded-xl border border-grillBorder bg-grillDark p-3 shadow-2xl">
-            <p class="mb-2 text-xs text-gray-400">Elige 2 sabores</p>
-            <div class="grid grid-cols-2 gap-2">
-              ${product.choices.map(choice => `<label class="flex min-h-10 cursor-pointer items-center gap-2 rounded-lg border border-grillBorder px-2 text-xs text-gray-300 has-[:checked]:border-grillRed has-[:checked]:bg-grillRed/10 has-[:checked]:text-white">
-                <input type="checkbox" data-product-choice value="${escapeHtml(choice)}" class="h-4 w-4 shrink-0 accent-red-500">
-                <span>${escapeHtml(choice)}</span>
-              </label>`).join('')}
-            </div>
-            <p data-choice-count class="mt-2 text-xs text-gray-400" aria-live="polite">0 de ${product.choiceCount} seleccionados</p>
-          </div>
-        </fieldset>`
-      : `<label class="block text-sm text-gray-300">Tipo de salsa
-          <select data-product-choice aria-label="Tipo de salsa para ${escapeHtml(product.name)}" class="mt-1 w-full bg-grillDark border border-grillBorder rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-grillGold">
-            ${product.choices.map(choice => `<option value="${escapeHtml(choice)}">${escapeHtml(choice)}</option>`).join('')}
-          </select>
-        </label>`
+  const singleChoiceSelect = product.choices?.length
+    ? `<label class="block text-sm text-gray-300">Tipo de salsa
+      <select data-product-choice data-choice-label="Tipo de salsa" data-choice-detail-label="Salsa" aria-label="Tipo de salsa para ${escapeHtml(product.name)}" class="mt-1 w-full bg-grillDark border border-grillBorder rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-grillGold">
+          ${product.choices.map(choice => `<option value="${escapeHtml(choice)}">${escapeHtml(choice)}</option>`).join('')}
+        </select>
+      </label>`
     : '';
+  const choiceGroups = (product.choiceGroups || []).map((group, index) => {
+    const groupId = `choice-options-${slugify(product.name)}-${slugify(group.key)}`;
+    if (group.requiredCount === 1) {
+      return `<label class="block text-sm text-gray-300">${escapeHtml(group.label)}
+        <select data-product-choice data-choice-label="${escapeHtml(group.label)}" data-choice-detail-label="${escapeHtml(group.detailLabel)}" aria-label="${escapeHtml(group.label)} para ${escapeHtml(product.name)}" class="mt-1 w-full bg-grillDark border border-grillBorder rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-grillGold">
+          ${group.choices.map(choice => `<option value="${escapeHtml(choice)}">${escapeHtml(choice)}</option>`).join('')}
+        </select>
+      </label>`;
+    }
+
+    return `<fieldset data-choice-group data-choice-required="${group.requiredCount}" data-choice-label="${escapeHtml(group.label)}" data-choice-detail-label="${escapeHtml(group.detailLabel)}" class="relative space-y-2">
+      <button type="button" data-disclosure-toggle aria-expanded="false" aria-controls="${groupId}" class="w-full rounded-xl border border-grillBorder bg-grillDark px-3 py-3 text-left text-sm font-semibold text-gray-200 transition-colors hover:border-grillGold flex items-center justify-between gap-2">
+        <span data-disclosure-label>${escapeHtml(group.label)}</span>
+        <i data-disclosure-icon class="fa-solid fa-chevron-down text-xs text-grillGold"></i>
+      </button>
+      <div id="${groupId}" data-disclosure-panel data-directional-panel class="absolute left-0 right-0 top-full z-50 mt-2 hidden max-h-64 overflow-y-auto rounded-xl border border-grillBorder bg-grillDark p-3 shadow-2xl">
+        <p class="mb-2 text-xs text-gray-400">Elige ${group.requiredCount}</p>
+        <div class="grid grid-cols-2 gap-2">
+          ${group.choices.map(choice => `<label class="flex min-h-10 cursor-pointer items-center gap-2 rounded-lg border border-grillBorder px-2 text-xs text-gray-300 has-[:checked]:border-grillRed has-[:checked]:bg-grillRed/10 has-[:checked]:text-white">
+            <input type="checkbox" data-product-choice value="${escapeHtml(choice)}" class="h-4 w-4 shrink-0 accent-red-500">
+            <span>${escapeHtml(choice)}</span>
+          </label>`).join('')}
+        </div>
+        <p data-choice-count class="mt-2 text-xs text-gray-400" aria-live="polite">0 de ${group.requiredCount} seleccionados</p>
+      </div>
+    </fieldset>`;
+  }).join('');
+  const choices = [singleChoiceSelect, choiceGroups].filter(Boolean).join('');
   const variants = hasMultipleVariants
-    ? `<button type="button" data-toggle-variants aria-expanded="false" aria-controls="${variantOptionsId}" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 px-3 py-3 rounded-xl font-semibold text-base transition-all flex items-center justify-between gap-2"><span><i class="fa-solid fa-plus mr-2"></i>Agregar</span><i data-toggle-icon class="fa-solid fa-chevron-down text-xs"></i></button>
-      <div id="${variantOptionsId}" data-variant-options class="hidden space-y-2">${variantButtons}</div>`
+    ? `<button type="button" data-disclosure-toggle aria-expanded="false" aria-controls="${variantOptionsId}" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 px-3 py-3 rounded-xl font-semibold text-base transition-all flex items-center justify-between gap-2"><span><i class="fa-solid fa-plus mr-2"></i>Agregar</span><i data-disclosure-icon class="fa-solid fa-chevron-down text-xs"></i></button>
+      <div id="${variantOptionsId}" data-variant-options data-disclosure-panel class="hidden space-y-2">${variantButtons}</div>`
     : variantButtons;
 
   return `<article class="bg-grillCard border border-grillBorder rounded-xl ${cardOverflowClass} shadow-lg flex flex-col gap-4 hover:border-grillRed/50 transition-all">
@@ -489,12 +555,17 @@ function renderMenu(categories) {
   main.classList.remove('hidden');
   filterCategory('all', buttons.querySelector('.cat-btn'));
 
+  document.addEventListener('click', event => {
+    if (event.target.closest('[data-disclosure-toggle], [data-disclosure-panel], [data-variant-options], [data-add-product]')) return;
+    closeDisclosures();
+  });
+
   main.addEventListener('change', event => {
     const checkbox = event.target.closest('[data-product-choice][type="checkbox"]');
     if (!checkbox) return;
 
     const group = checkbox.closest('[data-choice-group]');
-    const limit = Number(group.dataset.choiceLimit);
+    const limit = Number(group.dataset.choiceRequired);
     let selected = [...group.querySelectorAll('[data-product-choice]:checked')];
     if (selected.length > limit) {
       checkbox.checked = false;
@@ -505,44 +576,17 @@ function renderMenu(categories) {
       option.disabled = !option.checked && selected.length >= limit;
     });
     group.querySelector('[data-choice-count]').textContent = `${selected.length} de ${limit} seleccionados`;
-    group.querySelector('[data-sauce-toggle-label]').textContent = selected.length
-      ? selected.map(option => option.value).join(' + ')
-      : 'Tipo de salsa';
+    group.querySelector('[data-disclosure-label]').textContent = selected.length
+      ? `${group.dataset.choiceLabel}: ${selected.map(option => option.value).join(' + ')}`
+      : group.dataset.choiceLabel;
   });
 
   main.addEventListener('click', event => {
-    const sauceToggle = event.target.closest('[data-toggle-sauce-options]');
-    if (sauceToggle) {
-      const expanded = sauceToggle.getAttribute('aria-expanded') === 'true';
-      const options = document.getElementById(sauceToggle.getAttribute('aria-controls'));
-      sauceToggle.setAttribute('aria-expanded', String(!expanded));
-      if (expanded) {
-        options?.classList.add('hidden');
-      } else {
-        options?.classList.remove('hidden');
-        const buttonRect = sauceToggle.getBoundingClientRect();
-        const optionsHeight = options.getBoundingClientRect().height;
-        const spaceBelow = window.innerHeight - buttonRect.bottom - 8;
-        const spaceAbove = buttonRect.top - 8;
-        const openUp = spaceBelow < optionsHeight && spaceAbove > spaceBelow;
-        options.classList.toggle('bottom-full', openUp);
-        options.classList.toggle('top-full', !openUp);
-        options.classList.toggle('mb-2', openUp);
-        options.classList.toggle('mt-2', !openUp);
-      }
-      sauceToggle.querySelector('[data-sauce-toggle-icon]')?.classList.toggle('fa-chevron-down', expanded);
-      sauceToggle.querySelector('[data-sauce-toggle-icon]')?.classList.toggle('fa-chevron-up', !expanded);
-      return;
-    }
-
-    const toggleButton = event.target.closest('[data-toggle-variants]');
+    const toggleButton = event.target.closest('[data-disclosure-toggle]');
     if (toggleButton) {
       const expanded = toggleButton.getAttribute('aria-expanded') === 'true';
-      const options = document.getElementById(toggleButton.getAttribute('aria-controls'));
-      toggleButton.setAttribute('aria-expanded', String(!expanded));
-      options?.classList.toggle('hidden', expanded);
-      toggleButton.querySelector('[data-toggle-icon]')?.classList.toggle('fa-chevron-down', expanded);
-      toggleButton.querySelector('[data-toggle-icon]')?.classList.toggle('fa-chevron-up', !expanded);
+      closeDisclosures(toggleButton);
+      setDisclosureOpen(toggleButton, !expanded);
       return;
     }
 
@@ -550,26 +594,31 @@ function renderMenu(categories) {
     if (!button) return;
     const presentation = button.dataset.presentation;
     const card = button.closest('article');
-    const selectedSauces = [...card.querySelectorAll('[data-product-choice]')]
-      .filter(option => option.type !== 'checkbox' || option.checked)
-      .map(option => option.value);
-    const choiceGroup = card.querySelector('[data-choice-group]');
-    const requiredChoices = Number(choiceGroup?.dataset.choiceRequired || 0);
-    if (selectedSauces.length < requiredChoices) {
-      choiceGroup.querySelector('[data-choice-count]').textContent = `Selecciona ${requiredChoices} sabores para continuar`;
-      const sauceToggle = choiceGroup.querySelector('[data-toggle-sauce-options]');
-      sauceToggle?.setAttribute('aria-expanded', 'true');
-      document.getElementById(sauceToggle?.getAttribute('aria-controls'))?.classList.remove('hidden');
-      sauceToggle?.querySelector('[data-sauce-toggle-icon]')?.classList.replace('fa-chevron-down', 'fa-chevron-up');
+    const incompleteGroup = [...card.querySelectorAll('[data-choice-group]')].find(group => {
+      return group.querySelectorAll('[data-product-choice]:checked').length < Number(group.dataset.choiceRequired);
+    });
+    if (incompleteGroup) {
+      incompleteGroup.querySelector('[data-choice-count]').textContent = `Selecciona ${incompleteGroup.dataset.choiceRequired} opciones para continuar`;
+      const toggle = incompleteGroup.querySelector('[data-disclosure-toggle]');
+      closeDisclosures(toggle);
+      setDisclosureOpen(toggle, true);
       return;
     }
 
-    const itemName = button.dataset.itemName || (selectedSauces.length
-      ? `${button.dataset.product} - ${selectedSauces.join(' + ')} (${presentation})`
+    const choiceDetails = [
+      ...[...card.querySelectorAll('select[data-product-choice]')].map(select => `${select.dataset.choiceDetailLabel || select.dataset.choiceLabel}: ${select.value}`),
+      ...[...card.querySelectorAll('[data-choice-group]')].map(group => {
+        const selections = [...group.querySelectorAll('[data-product-choice]:checked')].map(option => option.value);
+        return `${group.dataset.choiceDetailLabel || group.dataset.choiceLabel}: ${selections.join(', ')}`;
+      })
+    ];
+    const itemName = button.dataset.itemName || (choiceDetails.length
+      ? button.dataset.product
       : presentation === 'Estándar'
       ? button.dataset.product
       : `${button.dataset.product} (${presentation})`);
-    addToCart(itemName, Number(button.dataset.price), button.dataset.image);
+    addToCart(itemName, Number(button.dataset.price), button.dataset.image, choiceDetails);
+    closeDisclosures();
   });
 }
 
