@@ -153,22 +153,36 @@ function createSideProduct(name, description, itemNames, sourceProducts) {
 
 function organizeMenu(categories) {
   const categoriesByName = new Map(categories.map(category => [category.name.toLocaleLowerCase('es'), category]));
+  const wingSauces = categoriesByName.get('alitas (salsas varias)')?.products.map(product => product.name.replace(/^Alitas\s*/i, '')) || [];
 
   return menuGroups.map(group => {
     let products = group.sources.flatMap(source => categoriesByName.get(source.toLocaleLowerCase('es'))?.products || []);
 
     if (group.sources.includes('ALITAS (SALSAS VARIAS)')) {
-      const sauces = products.map(product => product.name.replace(/^Alitas\s*/i, ''));
       const portions = products[0]?.variants || [];
       products = [{
         name: 'Alitas Crujientes',
-        description: `Salsas disponibles: ${sauces.join(', ')}. Incluye papas y ensalada.`,
-        choices: sauces,
+        description: `Salsas disponibles: ${wingSauces.join(', ')}. Incluye papas y ensalada.`,
+        choices: wingSauces,
         variants: portions.map(variant => ({
           ...variant,
           presentation: variant.presentation.replace(/Unidades/i, 'Alitas')
         }))
       }];
+    }
+
+    if (group.sources.includes('CORTES ESPECIALES')) {
+      products = products.map(product => product.name === 'Costilla de Cerdo'
+        ? { ...product, choices: wingSauces }
+        : product);
+    }
+
+    if (group.sources.includes('COMBOS')) {
+      products = products.map(product => {
+        if (product.name === 'Combo 1') return { ...product, choices: wingSauces };
+        if (product.name === 'Combo 2') return { ...product, choices: wingSauces, choiceCount: 2 };
+        return product;
+      });
     }
 
     if (group.sources.includes('Guarniciones')) {
@@ -397,6 +411,7 @@ function renderProduct(product, categoryName = '') {
   const imagePriceLabel = singlePrice === null ? `Desde $${lowestPrice.toFixed(2)}` : `$${lowestPrice.toFixed(2)}`;
   const hasMultipleVariants = product.variants.length > 1;
   const variantOptionsId = `variant-options-${slugify(product.name)}`;
+  const sauceOptionsId = `sauce-options-${slugify(product.name)}`;
   const variantButtons = product.variants.map(variant => {
     const actionLabel = singlePrice !== null ? 'Agregar' : variant.presentation;
     const priceLabel = singlePrice === null ? `<span class="shrink-0 font-bold">$${variant.price.toFixed(2)}</span>` : '';
@@ -408,11 +423,30 @@ function renderProduct(product, categoryName = '') {
       ${priceLabel}
     </button>`;
   }).join('');
-  const choices = product.choices ? `<label class="block text-sm text-gray-300">Salsa
-    <select data-product-choice aria-label="Salsa para las alitas" class="mt-1 w-full bg-grillDark border border-grillBorder rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-grillGold">
-      ${product.choices.map(choice => `<option value="${escapeHtml(choice)}">${escapeHtml(choice)}</option>`).join('')}
-    </select>
-  </label>` : '';
+  const choices = product.choices?.length
+    ? product.choiceCount > 1
+      ? `<fieldset data-choice-group data-choice-limit="${product.choiceCount}" data-choice-required="${product.choiceCount}" class="space-y-2">
+          <button type="button" data-toggle-sauce-options aria-expanded="false" aria-controls="${sauceOptionsId}" class="w-full rounded-xl border border-grillBorder bg-grillDark px-3 py-3 text-left text-sm font-semibold text-gray-200 transition-colors hover:border-grillGold flex items-center justify-between gap-2">
+            <span data-sauce-toggle-label>Tipo de salsa</span>
+            <i data-sauce-toggle-icon class="fa-solid fa-chevron-down text-xs text-grillGold"></i>
+          </button>
+          <div id="${sauceOptionsId}" data-sauce-options class="hidden rounded-xl border border-grillBorder bg-grillDark/60 p-3">
+            <p class="mb-2 text-xs text-gray-400">Elige 2 sabores</p>
+            <div class="grid grid-cols-2 gap-2">
+              ${product.choices.map(choice => `<label class="flex min-h-10 cursor-pointer items-center gap-2 rounded-lg border border-grillBorder px-2 text-xs text-gray-300 has-[:checked]:border-grillRed has-[:checked]:bg-grillRed/10 has-[:checked]:text-white">
+                <input type="checkbox" data-product-choice value="${escapeHtml(choice)}" class="h-4 w-4 shrink-0 accent-red-500">
+                <span>${escapeHtml(choice)}</span>
+              </label>`).join('')}
+            </div>
+            <p data-choice-count class="mt-2 text-xs text-gray-400" aria-live="polite">0 de ${product.choiceCount} seleccionados</p>
+          </div>
+        </fieldset>`
+      : `<label class="block text-sm text-gray-300">Tipo de salsa
+          <select data-product-choice aria-label="Tipo de salsa para ${escapeHtml(product.name)}" class="mt-1 w-full bg-grillDark border border-grillBorder rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-grillGold">
+            ${product.choices.map(choice => `<option value="${escapeHtml(choice)}">${escapeHtml(choice)}</option>`).join('')}
+          </select>
+        </label>`
+    : '';
   const variants = hasMultipleVariants
     ? `<button type="button" data-toggle-variants aria-expanded="false" aria-controls="${variantOptionsId}" class="w-full bg-grillRed/10 hover:bg-grillRed text-grillRed hover:text-white border border-grillRed/30 px-3 py-3 rounded-xl font-semibold text-base transition-all flex items-center justify-between gap-2"><span><i class="fa-solid fa-plus mr-2"></i>Agregar</span><i data-toggle-icon class="fa-solid fa-chevron-down text-xs"></i></button>
       <div id="${variantOptionsId}" data-variant-options class="hidden space-y-2">${variantButtons}</div>`
@@ -454,7 +488,39 @@ function renderMenu(categories) {
   main.classList.remove('hidden');
   filterCategory('all', buttons.querySelector('.cat-btn'));
 
+  main.addEventListener('change', event => {
+    const checkbox = event.target.closest('[data-product-choice][type="checkbox"]');
+    if (!checkbox) return;
+
+    const group = checkbox.closest('[data-choice-group]');
+    const limit = Number(group.dataset.choiceLimit);
+    let selected = [...group.querySelectorAll('[data-product-choice]:checked')];
+    if (selected.length > limit) {
+      checkbox.checked = false;
+      selected = [...group.querySelectorAll('[data-product-choice]:checked')];
+    }
+
+    group.querySelectorAll('[data-product-choice]').forEach(option => {
+      option.disabled = !option.checked && selected.length >= limit;
+    });
+    group.querySelector('[data-choice-count]').textContent = `${selected.length} de ${limit} seleccionados`;
+    group.querySelector('[data-sauce-toggle-label]').textContent = selected.length
+      ? selected.map(option => option.value).join(' + ')
+      : 'Tipo de salsa';
+  });
+
   main.addEventListener('click', event => {
+    const sauceToggle = event.target.closest('[data-toggle-sauce-options]');
+    if (sauceToggle) {
+      const expanded = sauceToggle.getAttribute('aria-expanded') === 'true';
+      const options = document.getElementById(sauceToggle.getAttribute('aria-controls'));
+      sauceToggle.setAttribute('aria-expanded', String(!expanded));
+      options?.classList.toggle('hidden', expanded);
+      sauceToggle.querySelector('[data-sauce-toggle-icon]')?.classList.toggle('fa-chevron-down', expanded);
+      sauceToggle.querySelector('[data-sauce-toggle-icon]')?.classList.toggle('fa-chevron-up', !expanded);
+      return;
+    }
+
     const toggleButton = event.target.closest('[data-toggle-variants]');
     if (toggleButton) {
       const expanded = toggleButton.getAttribute('aria-expanded') === 'true';
@@ -469,9 +535,23 @@ function renderMenu(categories) {
     const button = event.target.closest('[data-add-product]');
     if (!button) return;
     const presentation = button.dataset.presentation;
-    const choice = button.closest('article').querySelector('[data-product-choice]')?.value;
-    const itemName = button.dataset.itemName || (choice
-      ? `${button.dataset.product} - ${choice} (${presentation})`
+    const card = button.closest('article');
+    const selectedSauces = [...card.querySelectorAll('[data-product-choice]')]
+      .filter(option => option.type !== 'checkbox' || option.checked)
+      .map(option => option.value);
+    const choiceGroup = card.querySelector('[data-choice-group]');
+    const requiredChoices = Number(choiceGroup?.dataset.choiceRequired || 0);
+    if (selectedSauces.length < requiredChoices) {
+      choiceGroup.querySelector('[data-choice-count]').textContent = `Selecciona ${requiredChoices} sabores para continuar`;
+      const sauceToggle = choiceGroup.querySelector('[data-toggle-sauce-options]');
+      sauceToggle?.setAttribute('aria-expanded', 'true');
+      document.getElementById(sauceToggle?.getAttribute('aria-controls'))?.classList.remove('hidden');
+      sauceToggle?.querySelector('[data-sauce-toggle-icon]')?.classList.replace('fa-chevron-down', 'fa-chevron-up');
+      return;
+    }
+
+    const itemName = button.dataset.itemName || (selectedSauces.length
+      ? `${button.dataset.product} - ${selectedSauces.join(' + ')} (${presentation})`
       : presentation === 'Estándar'
       ? button.dataset.product
       : `${button.dataset.product} (${presentation})`);
