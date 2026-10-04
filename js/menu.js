@@ -402,8 +402,9 @@ function imageForProduct(name) {
 function renderProduct(product, categoryName = '') {
   const image = imageForProduct(product.name);
   const compactImage = ['Bebidas', 'Coctelería'].includes(categoryName);
-  const imageFrameClass = compactImage ? 'relative flex h-24 items-center justify-center overflow-hidden rounded-[20px] bg-gray-800' : 'relative';
+  const imageFrameClass = compactImage ? 'relative flex h-24 items-center justify-center overflow-hidden rounded-[20px] bg-gray-800' : 'relative overflow-hidden rounded-t-xl';
   const imageClass = compactImage ? 'h-24 w-24 shrink-0 rounded-[20px] object-contain' : 'w-full h-40 object-cover bg-gray-800';
+  const cardOverflowClass = product.choiceCount > 1 ? 'relative z-20 overflow-visible' : 'overflow-hidden';
   const singlePrice = product.variants.length === 1
     ? product.variants[0].price
     : null;
@@ -425,12 +426,12 @@ function renderProduct(product, categoryName = '') {
   }).join('');
   const choices = product.choices?.length
     ? product.choiceCount > 1
-      ? `<fieldset data-choice-group data-choice-limit="${product.choiceCount}" data-choice-required="${product.choiceCount}" class="space-y-2">
+      ? `<fieldset data-choice-group data-choice-limit="${product.choiceCount}" data-choice-required="${product.choiceCount}" class="relative space-y-2">
           <button type="button" data-toggle-sauce-options aria-expanded="false" aria-controls="${sauceOptionsId}" class="w-full rounded-xl border border-grillBorder bg-grillDark px-3 py-3 text-left text-sm font-semibold text-gray-200 transition-colors hover:border-grillGold flex items-center justify-between gap-2">
             <span data-sauce-toggle-label>Tipo de salsa</span>
             <i data-sauce-toggle-icon class="fa-solid fa-chevron-down text-xs text-grillGold"></i>
           </button>
-          <div id="${sauceOptionsId}" data-sauce-options class="hidden rounded-xl border border-grillBorder bg-grillDark/60 p-3">
+          <div id="${sauceOptionsId}" data-sauce-options class="absolute left-0 right-0 top-full z-50 mt-2 hidden max-h-64 overflow-y-auto rounded-xl border border-grillBorder bg-grillDark p-3 shadow-2xl">
             <p class="mb-2 text-xs text-gray-400">Elige 2 sabores</p>
             <div class="grid grid-cols-2 gap-2">
               ${product.choices.map(choice => `<label class="flex min-h-10 cursor-pointer items-center gap-2 rounded-lg border border-grillBorder px-2 text-xs text-gray-300 has-[:checked]:border-grillRed has-[:checked]:bg-grillRed/10 has-[:checked]:text-white">
@@ -452,7 +453,7 @@ function renderProduct(product, categoryName = '') {
       <div id="${variantOptionsId}" data-variant-options class="hidden space-y-2">${variantButtons}</div>`
     : variantButtons;
 
-  return `<article class="bg-grillCard border border-grillBorder rounded-xl overflow-hidden shadow-lg flex flex-col gap-4 hover:border-grillRed/50 transition-all">
+  return `<article class="bg-grillCard border border-grillBorder rounded-xl ${cardOverflowClass} shadow-lg flex flex-col gap-4 hover:border-grillRed/50 transition-all">
     <div class="${imageFrameClass}">
       <img src="${escapeHtml(image)}" alt="${escapeHtml(product.name)}" loading="lazy" class="${imageClass}" onerror="this.onerror=null;this.src='images/parillada_personal.png'">
       <span class="absolute top-3 right-3 rounded-full border border-red-300 bg-grillRed px-3 py-1 text-sm font-bold text-white shadow-lg shadow-red-950/40">${imagePriceLabel}</span>
@@ -515,7 +516,20 @@ function renderMenu(categories) {
       const expanded = sauceToggle.getAttribute('aria-expanded') === 'true';
       const options = document.getElementById(sauceToggle.getAttribute('aria-controls'));
       sauceToggle.setAttribute('aria-expanded', String(!expanded));
-      options?.classList.toggle('hidden', expanded);
+      if (expanded) {
+        options?.classList.add('hidden');
+      } else {
+        options?.classList.remove('hidden');
+        const buttonRect = sauceToggle.getBoundingClientRect();
+        const optionsHeight = options.getBoundingClientRect().height;
+        const spaceBelow = window.innerHeight - buttonRect.bottom - 8;
+        const spaceAbove = buttonRect.top - 8;
+        const openUp = spaceBelow < optionsHeight && spaceAbove > spaceBelow;
+        options.classList.toggle('bottom-full', openUp);
+        options.classList.toggle('top-full', !openUp);
+        options.classList.toggle('mb-2', openUp);
+        options.classList.toggle('mt-2', !openUp);
+      }
       sauceToggle.querySelector('[data-sauce-toggle-icon]')?.classList.toggle('fa-chevron-down', expanded);
       sauceToggle.querySelector('[data-sauce-toggle-icon]')?.classList.toggle('fa-chevron-up', !expanded);
       return;
